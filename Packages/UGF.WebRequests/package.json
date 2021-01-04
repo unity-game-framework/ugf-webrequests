@@ -1,20 +1,20 @@
 {
-  "name": "com.ugf.package.name",
-  "displayName": "UGF.Package.Name",
+  "name": "com.ugf.webrequests",
+  "displayName": "UGF.WebRequests",
   "version": "0.0.0-preview",
   "unity": "2020.2",
   "apiCompatibility": ".NET Standard 2.0",
-  "description": "No description.",
+  "description": "Provides utilities to work with Web requests.",
   "author": {
-      "name": "Unity Game Framework",
-      "url": "https://github.com/unity-game-framework"
+    "name": "Unity Game Framework",
+    "url": "https://github.com/unity-game-framework"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/unity-game-framework/ugf-draft.git"
+    "url": "git://github.com/unity-game-framework/ugf-webrequests.git"
   },
-  "changelogUrl": "https://github.com/unity-game-framework/ugf-draft/blob/master/changelog.md",
-  "licensesUrl": "https://github.com/unity-game-framework/ugf-draft/blob/master/license",
+  "changelogUrl": "https://github.com/unity-game-framework/ugf-webrequests/blob/master/changelog.md",
+  "licensesUrl": "https://github.com/unity-game-framework/ugf-webrequests/blob/master/license",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@unity-game-framework"
   },
