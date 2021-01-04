@@ -34,26 +34,48 @@ namespace UGF.WebRequests.Runtime.Http
         protected override async Task<IWebResponse> OnSendAsync(IWebRequest request)
         {
             HttpClient client = HttpClient;
-            HttpRequestMessage requestMessage = OnCreateHttpRequestMessage(request, client);
+            HttpRequestMessage requestMessage = OnCreateHttpRequestMessage(request);
 
             if (requestMessage == null) throw new ArgumentNullException(nameof(requestMessage), "Value cannot be null or empty.");
 
             HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
-            IWebResponse response = OnCreateResponse(request, client, responseMessage);
+            IWebResponse response = await OnCreateResponseAsync(request, responseMessage);
 
             if (response == null) throw new ArgumentNullException(nameof(response), "Value cannot be null or empty.");
 
             return response;
         }
 
-        protected virtual HttpClient OnCreateHttpClient()
+        protected virtual async Task<IWebResponse> OnCreateResponseAsync(IWebRequest request, HttpResponseMessage responseMessage)
         {
-            var httpClient = new HttpClient();
+            var response = new WebResponse(request.Method, request.Url, responseMessage.StatusCode);
 
-            return httpClient;
+            foreach (KeyValuePair<string, IEnumerable<string>> pair in responseMessage.Headers)
+            {
+                string value = string.Join(",", pair.Value);
+
+                response.Headers.Add(pair.Key, value);
+            }
+
+            byte[] bytes = await responseMessage.Content.ReadAsByteArrayAsync();
+
+            response.SetData(bytes);
+
+            return response;
         }
 
-        protected virtual HttpRequestMessage OnCreateHttpRequestMessage(IWebRequest request, HttpClient client)
+        protected virtual HttpClient OnCreateHttpClient()
+        {
+            var client = new HttpClient
+            {
+                Timeout = Description.Timeout,
+                MaxResponseContentBufferSize = Description.MaxResponseContentBufferSize
+            };
+
+            return client;
+        }
+
+        protected virtual HttpRequestMessage OnCreateHttpRequestMessage(IWebRequest request)
         {
             string methodName = WebRequestUtility.GetMethodName(request.Method);
             var method = new HttpMethod(methodName);
@@ -69,21 +91,19 @@ namespace UGF.WebRequests.Runtime.Http
                 message.Headers.Add(pair.Key, pair.Value);
             }
 
-            return message;
-        }
-
-        protected virtual IWebResponse OnCreateResponse(IWebRequest request, HttpClient client, HttpResponseMessage responseMessage)
-        {
-            var response = new WebResponse(request.Method, request.Url, responseMessage.StatusCode);
-
-            foreach (KeyValuePair<string, IEnumerable<string>> pair in responseMessage.Headers)
+            if (request.HasData)
             {
-                string value = string.Join(",", pair.Value);
-
-                response.Headers.Add(pair.Key, value);
+                if (request.Data is byte[] bytes)
+                {
+                    message.Content = new ByteArrayContent(bytes);
+                }
+                else
+                {
+                    throw new ArgumentException("Data must be a byte array.");
+                }
             }
 
-            return response;
+            return message;
         }
     }
 }

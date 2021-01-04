@@ -19,12 +19,10 @@ namespace UGF.WebRequests.Runtime.Unity
 
         protected override async Task<IWebResponse> OnSendAsync(IWebRequest request)
         {
-            UnityWebRequest unityWebRequest = OnCreateWebRequest(request);
-
-            m_currentUnityWebRequest = unityWebRequest ?? throw new ArgumentNullException(nameof(unityWebRequest), "Value cannot be null or empty.");
-
-            using (unityWebRequest)
+            using (UnityWebRequest unityWebRequest = OnCreateWebRequest(request))
             {
+                m_currentUnityWebRequest = unityWebRequest ?? throw new ArgumentNullException(nameof(unityWebRequest), "Value cannot be null or empty.");
+
                 unityWebRequest.SendWebRequest();
 
                 while (!unityWebRequest.isDone)
@@ -32,7 +30,7 @@ namespace UGF.WebRequests.Runtime.Unity
                     await Task.Yield();
                 }
 
-                IWebResponse response = OnCreateResponse(request, unityWebRequest);
+                IWebResponse response = await OnCreateResponseAsync(request, unityWebRequest);
 
                 if (response == null) throw new ArgumentNullException(nameof(response), "Value cannot be null or empty.");
 
@@ -42,10 +40,30 @@ namespace UGF.WebRequests.Runtime.Unity
             }
         }
 
+        protected virtual Task<IWebResponse> OnCreateResponseAsync(IWebRequest request, UnityWebRequest unityWebRequest)
+        {
+            Dictionary<string, string> headers = unityWebRequest.GetResponseHeaders();
+            var statusCode = (HttpStatusCode)unityWebRequest.responseCode;
+            var response = new WebResponse(headers, request.Method, request.Url, statusCode);
+
+            if (unityWebRequest.downloadHandler != null)
+            {
+                response.SetData(unityWebRequest.downloadHandler.data);
+            }
+
+            return Task.FromResult((IWebResponse)response);
+        }
+
         protected virtual UnityWebRequest OnCreateWebRequest(IWebRequest request)
         {
             string method = WebRequestUtility.GetMethodName(request.Method);
-            var unityWebRequest = new UnityWebRequest(request.Url, method);
+
+            var unityWebRequest = new UnityWebRequest(request.Url, method)
+            {
+                redirectLimit = Description.RedirectLimit,
+                timeout = Description.Timeout,
+                useHttpContinue = Description.UseHttpContinue
+            };
 
             foreach (KeyValuePair<string, string> pair in request.Headers)
             {
@@ -60,19 +78,34 @@ namespace UGF.WebRequests.Runtime.Unity
 
         protected virtual void OnCreateUploadHandler(IWebRequest request, UnityWebRequest unityWebRequest)
         {
+            if (request.HasData)
+            {
+                if (request.Data is byte[] bytes)
+                {
+                    var handler = new UploadHandlerRaw(bytes);
+
+                    if (request.Headers.TryGetValue(WebRequestHeaders.ContentType, out string value))
+                    {
+                        handler.contentType = value;
+                    }
+
+                    unityWebRequest.uploadHandler = handler;
+                }
+                else
+                {
+                    throw new ArgumentException("Data must be a byte array.");
+                }
+            }
         }
 
         protected virtual void OnCreateDownloadHandler(IWebRequest request, UnityWebRequest unityWebRequest)
         {
-        }
-
-        protected virtual IWebResponse OnCreateResponse(IWebRequest request, UnityWebRequest unityWebRequest)
-        {
-            Dictionary<string, string> headers = unityWebRequest.GetResponseHeaders();
-            var statusCode = (HttpStatusCode)unityWebRequest.responseCode;
-            var response = new WebResponse(headers, request.Method, request.Url, statusCode);
-
-            return response;
+            if (request.Method == WebRequestMethod.Get
+                || request.Method == WebRequestMethod.Post
+                || request.Method == WebRequestMethod.Put)
+            {
+                unityWebRequest.downloadHandler = new DownloadHandlerBuffer();
+            }
         }
     }
 }
