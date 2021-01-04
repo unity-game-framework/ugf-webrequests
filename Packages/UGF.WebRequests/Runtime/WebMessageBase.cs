@@ -6,7 +6,7 @@ namespace UGF.WebRequests.Runtime
     public abstract class WebMessageBase : IWebMessage
     {
         public Dictionary<string, string> Headers { get; }
-        public object Data { get { return m_data ?? throw new InvalidOperationException("Data has no value."); } }
+        public object Data { get { return m_data ?? throw new InvalidOperationException("Data not specified."); } }
         public bool HasData { get { return m_data != null; } }
 
         IReadOnlyDictionary<string, string> IWebMessage.Headers { get { return Headers; } }

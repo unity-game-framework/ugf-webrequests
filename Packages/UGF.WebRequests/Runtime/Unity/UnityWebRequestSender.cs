@@ -8,6 +8,11 @@ namespace UGF.WebRequests.Runtime.Unity
 {
     public class UnityWebRequestSender : WebRequestSender<UnityWebRequestSenderDescription>
     {
+        public UnityWebRequest CurrentUnityWebRequest { get { return m_currentUnityWebRequest ?? throw new InvalidOperationException("Has no Unity Web Request."); } }
+        public bool HasCurrentUnityWebRequest { get { return m_currentUnityWebRequest != null; } }
+
+        private UnityWebRequest m_currentUnityWebRequest;
+
         public UnityWebRequestSender(UnityWebRequestSenderDescription description) : base(description)
         {
         }
@@ -16,7 +21,7 @@ namespace UGF.WebRequests.Runtime.Unity
         {
             UnityWebRequest unityWebRequest = OnCreateWebRequest(request);
 
-            if (unityWebRequest == null) throw new ArgumentNullException(nameof(unityWebRequest), "Value cannot be null or empty.");
+            m_currentUnityWebRequest = unityWebRequest ?? throw new ArgumentNullException(nameof(unityWebRequest), "Value cannot be null or empty.");
 
             using (unityWebRequest)
             {
@@ -31,6 +36,8 @@ namespace UGF.WebRequests.Runtime.Unity
 
                 if (response == null) throw new ArgumentNullException(nameof(response), "Value cannot be null or empty.");
 
+                m_currentUnityWebRequest = null;
+
                 return response;
             }
         }
@@ -40,15 +47,15 @@ namespace UGF.WebRequests.Runtime.Unity
             string method = WebRequestUtility.GetMethodName(request.Method);
             var unityWebRequest = new UnityWebRequest(request.Url, method);
 
-            OnSetup(request, unityWebRequest);
+            foreach (KeyValuePair<string, string> pair in request.Headers)
+            {
+                unityWebRequest.SetRequestHeader(pair.Key, pair.Value);
+            }
+
             OnCreateUploadHandler(request, unityWebRequest);
             OnCreateDownloadHandler(request, unityWebRequest);
 
             return unityWebRequest;
-        }
-
-        protected virtual void OnSetup(IWebRequest request, UnityWebRequest unityWebRequest)
-        {
         }
 
         protected virtual void OnCreateUploadHandler(IWebRequest request, UnityWebRequest unityWebRequest)
