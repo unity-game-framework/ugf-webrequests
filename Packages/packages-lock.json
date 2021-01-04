@@ -16,11 +16,19 @@
       },
       "url": "https://api.bintray.com/npm/unity-game-framework/public"
     },
+    "com.ugf.initialize": {
+      "version": "2.6.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://api.bintray.com/npm/unity-game-framework/public"
+    },
     "com.ugf.webrequests": {
       "version": "file:UGF.WebRequests",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
+        "com.ugf.initialize": "2.6.0",
         "com.ugf.description": "2.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0"
       }
