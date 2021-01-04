@@ -31,12 +31,17 @@ namespace UGF.WebRequests.Runtime.Http
         {
             base.OnUninitialize();
 
-            m_listener.Stop();
+            m_listener = null;
         }
 
         protected virtual HttpListener OnCreateListener()
         {
             var listener = new HttpListener();
+
+            foreach (string prefix in Description.Prefixes)
+            {
+                listener.Prefixes.Add(prefix);
+            }
 
             return listener;
         }
@@ -49,16 +54,23 @@ namespace UGF.WebRequests.Runtime.Http
             {
                 HttpListenerContext context = await listener.GetContextAsync();
 
-                try
+                if (m_listener != null)
                 {
-                    IWebRequest request = await OnCreateRequestAsync(context);
-                    IWebResponse response = await OnCreateResponseAsync(request, context);
+                    try
+                    {
+                        IWebRequest request = await OnCreateRequestAsync(context);
+                        IWebResponse response = await OnCreateResponseAsync(request, context);
 
-                    await OnProcessResponse(response, context);
+                        await OnProcessResponse(response, context);
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.Write(exception);
+                    }
                 }
-                catch (Exception exception)
+                else
                 {
-                    Console.Write(exception);
+                    listener.Close();
                 }
             }
         }
