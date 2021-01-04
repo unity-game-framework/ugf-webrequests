@@ -15,7 +15,26 @@ namespace UGF.WebRequests.Runtime
                 case WebRequestMethod.Post: return "POST";
                 case WebRequestMethod.Put: return "PUT";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(method), method, null);
+                {
+                    throw new ArgumentOutOfRangeException(nameof(method), method, "Unknown method specified.");
+                }
+            }
+        }
+
+        public static WebRequestMethod GetMethod(string method)
+        {
+            switch (method)
+            {
+                case "CREATE": return WebRequestMethod.Create;
+                case "DELETE": return WebRequestMethod.Delete;
+                case "GET": return WebRequestMethod.Get;
+                case "HEAD": return WebRequestMethod.Head;
+                case "POST": return WebRequestMethod.Post;
+                case "PUT": return WebRequestMethod.Put;
+                default:
+                {
+                    throw new ArgumentOutOfRangeException(nameof(method), method, "Unknown method name specified.");
+                }
             }
         }
     }

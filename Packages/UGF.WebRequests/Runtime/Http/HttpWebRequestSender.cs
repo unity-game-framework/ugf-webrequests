@@ -8,9 +8,9 @@ namespace UGF.WebRequests.Runtime.Http
 {
     public class HttpWebRequestSender : WebRequestSender<HttpWebRequestSenderDescription>
     {
-        public HttpClient HttpClient { get { return m_httpClient ?? throw new InitializeStateException("HttpClient not initialized."); } }
+        public HttpClient Client { get { return m_client ?? throw new InitializeStateException("Client is not initialized."); } }
 
-        private HttpClient m_httpClient;
+        private HttpClient m_client;
 
         public HttpWebRequestSender(HttpWebRequestSenderDescription description) : base(description)
         {
@@ -20,21 +20,21 @@ namespace UGF.WebRequests.Runtime.Http
         {
             base.OnInitialize();
 
-            m_httpClient = OnCreateHttpClient();
+            m_client = OnCreateClient();
         }
 
         protected override void OnUninitialize()
         {
             base.OnUninitialize();
 
-            m_httpClient.Dispose();
-            m_httpClient = null;
+            m_client.Dispose();
+            m_client = null;
         }
 
         protected override async Task<IWebResponse> OnSendAsync(IWebRequest request)
         {
-            HttpClient client = HttpClient;
-            HttpRequestMessage requestMessage = OnCreateHttpRequestMessage(request);
+            HttpClient client = Client;
+            HttpRequestMessage requestMessage = OnCreateRequestMessage(request);
 
             if (requestMessage == null) throw new ArgumentNullException(nameof(requestMessage), "Value cannot be null or empty.");
 
@@ -64,7 +64,7 @@ namespace UGF.WebRequests.Runtime.Http
             return response;
         }
 
-        protected virtual HttpClient OnCreateHttpClient()
+        protected virtual HttpClient OnCreateClient()
         {
             var client = new HttpClient
             {
@@ -75,7 +75,7 @@ namespace UGF.WebRequests.Runtime.Http
             return client;
         }
 
-        protected virtual HttpRequestMessage OnCreateHttpRequestMessage(IWebRequest request)
+        protected virtual HttpRequestMessage OnCreateRequestMessage(IWebRequest request)
         {
             string methodName = WebRequestUtility.GetMethodName(request.Method);
             var method = new HttpMethod(methodName);

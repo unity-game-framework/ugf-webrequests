@@ -5,6 +5,6 @@ namespace UGF.WebRequests.Runtime
 {
     public interface IWebRequestReceiver : IInitialize, IDescribed
     {
-        event WebRequestReceiverHandler Handler;
+        IWebRequestReceiveHandler Handler { get; }
     }
 }
