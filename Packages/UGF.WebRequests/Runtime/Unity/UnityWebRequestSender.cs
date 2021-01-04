@@ -17,6 +17,16 @@ namespace UGF.WebRequests.Runtime.Unity
         {
         }
 
+        protected override void OnUninitialize()
+        {
+            base.OnUninitialize();
+
+            if (HasCurrentUnityWebRequest)
+            {
+                CurrentUnityWebRequest.Dispose();
+            }
+        }
+
         protected override async Task<IWebResponse> OnSendAsync(IWebRequest request)
         {
             using (UnityWebRequest unityWebRequest = OnCreateWebRequest(request))
