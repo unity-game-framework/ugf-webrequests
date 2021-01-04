@@ -3,5 +3,6 @@
     public interface IWebRequest : IWebMessage
     {
         WebRequestMethod Method { get; }
+        string Url { get; }
     }
 }
