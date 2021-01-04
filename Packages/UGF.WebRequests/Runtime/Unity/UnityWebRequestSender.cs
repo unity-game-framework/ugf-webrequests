@@ -6,9 +6,9 @@ using UnityEngine.Networking;
 
 namespace UGF.WebRequests.Runtime.Unity
 {
-    public class WebRequestSenderUnity : WebRequestSender<WebRequestSenderUnityDescription>
+    public class UnityWebRequestSender : WebRequestSender<UnityWebRequestSenderDescription>
     {
-        public WebRequestSenderUnity(WebRequestSenderUnityDescription description) : base(description)
+        public UnityWebRequestSender(UnityWebRequestSenderDescription description) : base(description)
         {
         }
 
@@ -40,10 +40,15 @@ namespace UGF.WebRequests.Runtime.Unity
             string method = WebRequestUtility.GetMethodName(request.Method);
             var unityWebRequest = new UnityWebRequest(request.Url, method);
 
+            OnSetup(request, unityWebRequest);
             OnCreateUploadHandler(request, unityWebRequest);
             OnCreateDownloadHandler(request, unityWebRequest);
 
             return unityWebRequest;
+        }
+
+        protected virtual void OnSetup(IWebRequest request, UnityWebRequest unityWebRequest)
+        {
         }
 
         protected virtual void OnCreateUploadHandler(IWebRequest request, UnityWebRequest unityWebRequest)
