@@ -8,22 +8,19 @@ namespace UGF.WebRequests.Runtime.Tests
         [SerializeField] private string m_name;
         [SerializeField] private string m_method;
         [SerializeField] private string m_url;
+        [SerializeField] private TestLogsComponent m_logs;
 
         public string Name { get { return m_name; } set { m_name = value; } }
         public string Method { get { return m_method; } set { m_method = value; } }
         public string Url { get { return m_url; } set { m_url = value; } }
-
-        private string m_log;
-        private Vector2 m_scroll;
+        public TestLogsComponent Logs { get { return m_logs; } set { m_logs = value; } }
 
         protected virtual void OnEnable()
         {
-            Application.logMessageReceived += OnApplicationLogMessageReceived;
         }
 
         protected virtual void OnDisable()
         {
-            Application.logMessageReceived -= OnApplicationLogMessageReceived;
         }
 
         private void OnGUI()
@@ -40,18 +37,9 @@ namespace UGF.WebRequests.Runtime.Tests
                 SendAsync(m_method, m_url);
             }
 
-            m_scroll = GUILayout.BeginScrollView(m_scroll);
-
-            GUILayout.TextArea(m_log, GUILayout.ExpandHeight(true));
-
-            GUILayout.EndScrollView();
+            m_logs.DrawGUILayout();
 
             GUILayout.EndArea();
-        }
-
-        private void OnApplicationLogMessageReceived(string condition, string stacktrace, LogType type)
-        {
-            m_log += $"\n{type}: {condition}\n{stacktrace}";
         }
 
         private async void SendAsync(string methodName, string url)
