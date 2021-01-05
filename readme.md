@@ -4,16 +4,13 @@ UGF.WebRequests
 
 ## Info
 
-- **Version**: `1.0.0`
+- **Version**: `0.0.0-preview`
 - **Unity**: `2020.2`
 - **API Compatibility Level**: `.NET Standard 2.0`
 
 ### Dependencies
 
-- `com.ugf.initialize`: `2.6.0`
-- `com.ugf.description`: `2.0.0`
-- `com.ugf.logs`: `4.2.1`
-- `com.unity.modules.unitywebrequest`: `1.0.0`
+- N/A
 
 
 ### Description
