@@ -68,7 +68,7 @@ namespace UGF.WebRequests.Runtime.Unity
 
         protected virtual Task<IWebResponse> OnCreateResponseAsync(IWebRequest request, UnityWebRequest unityWebRequest)
         {
-            Dictionary<string, string> headers = unityWebRequest.GetResponseHeaders();
+            Dictionary<string, string> headers = unityWebRequest.GetResponseHeaders() ?? new Dictionary<string, string>();
             var statusCode = (HttpStatusCode)unityWebRequest.responseCode;
             var response = new WebResponse(headers, request.Method, request.Url, statusCode);
 
