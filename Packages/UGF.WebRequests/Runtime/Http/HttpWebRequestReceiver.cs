@@ -65,7 +65,7 @@ namespace UGF.WebRequests.Runtime.Http
                     }
                     catch (Exception exception)
                     {
-                        Console.Write(exception);
+                        await OnProcessError(exception, context);
                     }
                 }
                 else
@@ -133,6 +133,17 @@ namespace UGF.WebRequests.Runtime.Http
 
                 throw new ArgumentException("Data must be a byte array.");
             }
+
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnProcessError(Exception exception, HttpListenerContext context)
+        {
+            HttpListenerResponse listenerResponse = context.Response;
+
+            listenerResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            Console.WriteLine(exception);
 
             return Task.CompletedTask;
         }
