@@ -82,7 +82,7 @@ namespace UGF.WebRequests.Runtime.Http
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning($"Listener processing error has occurred.", exception);
+                    Log.Warning("Listener processing error has occurred.", exception);
 
                     await Task.Yield();
                 }
@@ -139,7 +139,7 @@ namespace UGF.WebRequests.Runtime.Http
             return response;
         }
 
-        protected virtual Task OnProcessResponse(IWebResponse response, HttpListenerContext context)
+        protected virtual async Task OnProcessResponse(IWebResponse response, HttpListenerContext context)
         {
             HttpListenerResponse listenerResponse = context.Response;
 
@@ -158,14 +158,16 @@ namespace UGF.WebRequests.Runtime.Http
 
                     using (var memoryStream = new MemoryStream(bytes))
                     {
-                        return memoryStream.CopyToAsync(listenerResponse.OutputStream);
+                        await memoryStream.CopyToAsync(listenerResponse.OutputStream);
                     }
                 }
-
-                throw new ArgumentException("Data must be a byte array.");
+                else
+                {
+                    throw new ArgumentException("Data must be a byte array.");
+                }
             }
 
-            return Task.CompletedTask;
+            listenerResponse.OutputStream.Close();
         }
 
         protected virtual Task OnProcessError(Exception exception, HttpListenerContext context)
@@ -173,8 +175,9 @@ namespace UGF.WebRequests.Runtime.Http
             HttpListenerResponse listenerResponse = context.Response;
 
             listenerResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+            listenerResponse.OutputStream.Close();
 
-            Log.Warning($"Listener request error has occurred", exception, new
+            Log.Warning("Listener request error has occurred", exception, new
             {
                 context.Request.HttpMethod,
                 context.Request.RawUrl,
