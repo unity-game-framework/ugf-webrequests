@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using UGF.Logs.Runtime;
 using UnityEngine.Networking;
 
 namespace UGF.WebRequests.Runtime.Unity
@@ -33,6 +34,13 @@ namespace UGF.WebRequests.Runtime.Unity
             {
                 m_currentUnityWebRequest = unityWebRequest ?? throw new ArgumentNullException(nameof(unityWebRequest), "Value cannot be null or empty.");
 
+                Log.Debug("Sending web request", new
+                {
+                    request.Method,
+                    request.Url,
+                    request.HasData
+                });
+
                 unityWebRequest.SendWebRequest();
 
                 while (!unityWebRequest.isDone)
@@ -45,6 +53,14 @@ namespace UGF.WebRequests.Runtime.Unity
                 if (response == null) throw new ArgumentNullException(nameof(response), "Value cannot be null or empty.");
 
                 m_currentUnityWebRequest = null;
+
+                Log.Debug("Received web response", new
+                {
+                    response.Method,
+                    response.Url,
+                    response.StatusCode,
+                    response.HasData
+                });
 
                 return response;
             }

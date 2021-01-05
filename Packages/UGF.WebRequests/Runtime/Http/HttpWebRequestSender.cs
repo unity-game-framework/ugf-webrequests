@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using UGF.Initialize.Runtime;
+using UGF.Logs.Runtime;
 
 namespace UGF.WebRequests.Runtime.Http
 {
@@ -21,6 +22,13 @@ namespace UGF.WebRequests.Runtime.Http
             base.OnInitialize();
 
             m_client = OnCreateClient();
+
+            Log.Debug("Http client created", new
+            {
+                m_client.Timeout,
+                m_client.BaseAddress,
+                m_client.MaxResponseContentBufferSize
+            });
         }
 
         protected override void OnUninitialize()
@@ -29,10 +37,19 @@ namespace UGF.WebRequests.Runtime.Http
 
             m_client.Dispose();
             m_client = null;
+
+            Log.Debug("Http client disposed.");
         }
 
         protected override async Task<IWebResponse> OnSendAsync(IWebRequest request)
         {
+            Log.Debug("Sending web request", new
+            {
+                request.Method,
+                request.Url,
+                request.HasData
+            });
+
             HttpClient client = Client;
             HttpRequestMessage requestMessage = OnCreateRequestMessage(request);
 
@@ -42,6 +59,14 @@ namespace UGF.WebRequests.Runtime.Http
             IWebResponse response = await OnCreateResponseAsync(request, responseMessage);
 
             if (response == null) throw new ArgumentNullException(nameof(response), "Value cannot be null or empty.");
+
+            Log.Debug("Received web response", new
+            {
+                response.Method,
+                response.Url,
+                response.StatusCode,
+                response.HasData
+            });
 
             return response;
         }

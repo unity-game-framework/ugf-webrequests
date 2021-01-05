@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using UGF.Initialize.Runtime;
+using UGF.Logs.Runtime;
 
 namespace UGF.WebRequests.Runtime.Http
 {
@@ -25,13 +26,22 @@ namespace UGF.WebRequests.Runtime.Http
             m_listener.Start();
 
             StartListen();
+
+            Log.Debug("Http listener created and started", new
+            {
+                prefixesCount = m_listener.Prefixes.Count
+            });
         }
 
         protected override void OnUninitialize()
         {
             base.OnUninitialize();
 
+            m_listener.Stop();
+            m_listener.Close();
             m_listener = null;
+
+            Log.Debug("Http listener closed.");
         }
 
         protected virtual HttpListener OnCreateListener()
@@ -52,10 +62,12 @@ namespace UGF.WebRequests.Runtime.Http
 
             while (listener.IsListening)
             {
-                HttpListenerContext context = await listener.GetContextAsync();
+                Log.Debug("Http listener processing.");
 
-                if (m_listener != null)
+                try
                 {
+                    HttpListenerContext context = await listener.GetContextAsync();
+
                     try
                     {
                         IWebRequest request = await OnCreateRequestAsync(context);
@@ -68,9 +80,11 @@ namespace UGF.WebRequests.Runtime.Http
                         await OnProcessError(exception, context);
                     }
                 }
-                else
+                catch (Exception exception)
                 {
-                    listener.Close();
+                    Log.Warning($"Listener processing error has occurred.\n---\n{exception}\n---");
+
+                    await Task.Yield();
                 }
             }
         }
@@ -100,12 +114,29 @@ namespace UGF.WebRequests.Runtime.Http
                 }
             }
 
+            Log.Debug("Received web request", new
+            {
+                request.Method,
+                request.Url,
+                request.HasData
+            });
+
             return request;
         }
 
-        protected virtual Task<IWebResponse> OnCreateResponseAsync(IWebRequest request, HttpListenerContext context)
+        protected virtual async Task<IWebResponse> OnCreateResponseAsync(IWebRequest request, HttpListenerContext context)
         {
-            return HandleRequestAsync(request);
+            IWebResponse response = await HandleRequestAsync(request);
+
+            Log.Debug("Sending web response", new
+            {
+                response.Method,
+                response.Url,
+                response.StatusCode,
+                response.HasData
+            });
+
+            return response;
         }
 
         protected virtual Task OnProcessResponse(IWebResponse response, HttpListenerContext context)
@@ -143,7 +174,12 @@ namespace UGF.WebRequests.Runtime.Http
 
             listenerResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            Console.WriteLine(exception);
+            Log.Warning($"Listener request error has occurred.\n---\n{exception}\n---", new
+            {
+                context.Request.HttpMethod,
+                context.Request.RawUrl,
+                context.Request.HasEntityBody
+            });
 
             return Task.CompletedTask;
         }
