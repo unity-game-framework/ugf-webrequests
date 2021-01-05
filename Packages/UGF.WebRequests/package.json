@@ -24,7 +24,7 @@
   "dependencies": {
     "com.ugf.initialize": "2.6.0",
     "com.ugf.description": "2.0.0",
-    "com.ugf.logs": "4.1.0",
+    "com.ugf.logs": "4.2.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   }
 }

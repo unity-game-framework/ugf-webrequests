@@ -82,7 +82,7 @@ namespace UGF.WebRequests.Runtime.Http
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning($"Listener processing error has occurred.\n---\n{exception}\n---");
+                    Log.Warning($"Listener processing error has occurred.", exception);
 
                     await Task.Yield();
                 }
@@ -174,7 +174,7 @@ namespace UGF.WebRequests.Runtime.Http
 
             listenerResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            Log.Warning($"Listener request error has occurred.\n---\n{exception}\n---", new
+            Log.Warning($"Listener request error has occurred", exception, new
             {
                 context.Request.HttpMethod,
                 context.Request.RawUrl,
