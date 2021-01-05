@@ -48,6 +48,13 @@ namespace UGF.WebRequests.Runtime.Unity
                     await Task.Yield();
                 }
 
+                string error = unityWebRequest.error;
+
+                if (error != null)
+                {
+                    Log.Warning($"Unity Web Request error has occurred: '{error}'.");
+                }
+
                 IWebResponse response = await OnCreateResponseAsync(request, unityWebRequest);
 
                 if (response == null) throw new ArgumentNullException(nameof(response), "Value cannot be null or empty.");
