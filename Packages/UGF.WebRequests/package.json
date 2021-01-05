@@ -21,5 +21,10 @@
   "bintray": {
     "registry": "https://api.bintray.com/content/unity-game-framework/public"
   },
-  "dependencies": {}
+  "dependencies": {
+    "com.ugf.initialize": "2.6.0",
+    "com.ugf.description": "2.0.0",
+    "com.ugf.logs": "4.2.1",
+    "com.unity.modules.unitywebrequest": "1.0.0"
+  }
 }
