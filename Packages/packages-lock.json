@@ -8,20 +8,22 @@
       "url": "https://unitygameframework.jfrog.io/artifactory/api/npm/default"
     },
     "com.ugf.customsettings": {
-      "version": "3.4.0",
+      "version": "3.4.1",
       "depth": 3,
       "source": "registry",
       "dependencies": {
+        "com.unity.modules.jsonserialize": "1.0.0",
         "com.ugf.editortools": "1.7.0"
       },
       "url": "https://unitygameframework.jfrog.io/artifactory/api/npm/default"
     },
     "com.ugf.defines": {
-      "version": "2.1.0",
+      "version": "2.1.5",
       "depth": 2,
       "source": "registry",
       "dependencies": {
-        "com.ugf.customsettings": "3.4.0"
+        "com.ugf.customsettings": "3.4.1",
+        "com.ugf.editortools": "1.13.0"
       },
       "url": "https://unitygameframework.jfrog.io/artifactory/api/npm/default"
     },
@@ -35,25 +37,26 @@
       "url": "https://unitygameframework.jfrog.io/artifactory/api/npm/default"
     },
     "com.ugf.editortools": {
-      "version": "1.7.0",
-      "depth": 4,
+      "version": "2.1.0",
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://unitygameframework.jfrog.io/artifactory/api/npm/default"
     },
     "com.ugf.initialize": {
-      "version": "2.6.0",
+      "version": "2.7.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://unitygameframework.jfrog.io/artifactory/api/npm/default"
     },
     "com.ugf.logs": {
-      "version": "4.2.1",
+      "version": "5.2.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.ugf.defines": "2.1.0"
+        "com.ugf.defines": "2.1.5",
+        "com.ugf.editortools": "2.1.0"
       },
       "url": "https://unitygameframework.jfrog.io/artifactory/api/npm/default"
     },
@@ -62,9 +65,9 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.ugf.initialize": "2.6.0",
+        "com.ugf.initialize": "2.7.0",
         "com.ugf.description": "2.0.0",
-        "com.ugf.logs": "4.2.1",
+        "com.ugf.logs": "5.2.2",
         "com.unity.modules.unitywebrequest": "1.0.0"
       }
     },

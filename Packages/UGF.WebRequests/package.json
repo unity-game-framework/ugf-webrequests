@@ -19,9 +19,9 @@
     "registry": "https://npm.pkg.github.com/@unity-game-framework"
   },
   "dependencies": {
-    "com.ugf.initialize": "2.6.0",
+    "com.ugf.initialize": "2.7.0",
     "com.ugf.description": "2.0.0",
-    "com.ugf.logs": "4.2.1",
+    "com.ugf.logs": "5.2.2",
     "com.unity.modules.unitywebrequest": "1.0.0"
   }
 }
