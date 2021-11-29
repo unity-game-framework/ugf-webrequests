@@ -116,16 +116,9 @@ namespace UGF.WebRequests.Runtime.Http
                 message.Headers.Add(key, value);
             }
 
-            if (request.HasData)
+            if (request.TryGetData(out byte[] bytes))
             {
-                if (request.Data is byte[] bytes)
-                {
-                    message.Content = new ByteArrayContent(bytes);
-                }
-                else
-                {
-                    throw new ArgumentException("Data must be a byte array.");
-                }
+                message.Content = new ByteArrayContent(bytes);
             }
 
             return message;

@@ -148,20 +148,13 @@ namespace UGF.WebRequests.Runtime.Http
                 listenerResponse.Headers[key] = value;
             }
 
-            if (response.HasData)
+            if (response.TryGetData(out byte[] bytes))
             {
-                if (response.Data is byte[] bytes)
-                {
-                    listenerResponse.ContentLength64 = bytes.Length;
+                listenerResponse.ContentLength64 = bytes.Length;
 
-                    await using var memoryStream = new MemoryStream(bytes);
+                await using var memoryStream = new MemoryStream(bytes);
 
-                    await memoryStream.CopyToAsync(listenerResponse.OutputStream);
-                }
-                else
-                {
-                    throw new ArgumentException("Data must be a byte array.");
-                }
+                await memoryStream.CopyToAsync(listenerResponse.OutputStream);
             }
 
             listenerResponse.OutputStream.Close();

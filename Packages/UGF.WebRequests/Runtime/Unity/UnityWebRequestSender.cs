@@ -111,23 +111,16 @@ namespace UGF.WebRequests.Runtime.Unity
 
         protected virtual void OnCreateUploadHandler(IWebRequest request, UnityWebRequest unityWebRequest)
         {
-            if (request.HasData)
+            if (request.TryGetData(out byte[] bytes))
             {
-                if (request.Data is byte[] bytes)
-                {
-                    var handler = new UploadHandlerRaw(bytes);
+                var handler = new UploadHandlerRaw(bytes);
 
-                    if (request.Headers.TryGetValue(WebRequestHeaders.ContentType, out string value))
-                    {
-                        handler.contentType = value;
-                    }
-
-                    unityWebRequest.uploadHandler = handler;
-                }
-                else
+                if (request.Headers.TryGetValue(WebRequestHeaders.ContentType, out string value))
                 {
-                    throw new ArgumentException("Data must be a byte array.");
+                    handler.contentType = value;
                 }
+
+                unityWebRequest.uploadHandler = handler;
             }
         }
 
