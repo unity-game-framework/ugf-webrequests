@@ -15,7 +15,7 @@ namespace UGF.WebRequests.Runtime.Tests.Unity
         public IEnumerator Get()
         {
             var sender = new UnityWebRequestSender(new UnityWebRequestSenderDescription());
-            var request = new WebRequest(WebRequestMethod.Get, "https://api.bintray.com/npm/unity-game-framework/stable/com.ugf.application");
+            var request = new WebRequest(WebRequestMethod.Get, "https://unitygameframework.jfrog.io/artifactory/api/npm/default/com.ugf.application");
 
             using (new InitializeScope(sender))
             {
