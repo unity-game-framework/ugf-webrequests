@@ -7,5 +7,10 @@ namespace UGF.WebRequests.Runtime
         IReadOnlyDictionary<string, string> Headers { get; }
         object Data { get; }
         bool HasData { get; }
+
+        T GetData<T>();
+        object GetData();
+        bool TryGetData<T>(out T data);
+        bool TryGetData(out object data);
     }
 }

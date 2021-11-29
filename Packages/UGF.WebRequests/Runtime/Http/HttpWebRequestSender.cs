@@ -75,11 +75,11 @@ namespace UGF.WebRequests.Runtime.Http
         {
             var response = new WebResponse(request.Method, request.Url, responseMessage.StatusCode);
 
-            foreach (KeyValuePair<string, IEnumerable<string>> pair in responseMessage.Headers)
+            foreach ((string key, IEnumerable<string> enumerable) in responseMessage.Headers)
             {
-                string value = string.Join(",", pair.Value);
+                string value = string.Join(",", enumerable);
 
-                response.Headers.Add(pair.Key, value);
+                response.Headers.Add(key, value);
             }
 
             byte[] bytes = await responseMessage.Content.ReadAsByteArrayAsync();
@@ -106,26 +106,19 @@ namespace UGF.WebRequests.Runtime.Http
             var method = new HttpMethod(methodName);
             var message = new HttpRequestMessage(method, request.Url);
 
-            foreach (KeyValuePair<string, string> pair in request.Headers)
+            foreach ((string key, string value) in request.Headers)
             {
-                if (message.Headers.Contains(pair.Key))
+                if (message.Headers.Contains(key))
                 {
-                    message.Headers.Remove(pair.Key);
+                    message.Headers.Remove(key);
                 }
 
-                message.Headers.Add(pair.Key, pair.Value);
+                message.Headers.Add(key, value);
             }
 
-            if (request.HasData)
+            if (request.TryGetData(out byte[] bytes))
             {
-                if (request.Data is byte[] bytes)
-                {
-                    message.Content = new ByteArrayContent(bytes);
-                }
-                else
-                {
-                    throw new ArgumentException("Data must be a byte array.");
-                }
+                message.Content = new ByteArrayContent(bytes);
             }
 
             return message;

@@ -19,12 +19,12 @@ namespace UGF.WebRequests.Runtime
         {
             var response = new WebResponse(request.Method, request.Url, HttpStatusCode.NotImplemented);
 
-            foreach (KeyValuePair<string, string> pair in request.Headers)
+            foreach ((string key, string value) in request.Headers)
             {
-                response.Headers.Add(pair.Key, pair.Value);
+                response.Headers.Add(key, value);
             }
 
-            return Task.FromResult((IWebResponse)response);
+            return Task.FromResult<IWebResponse>(response);
         }
     }
 }
