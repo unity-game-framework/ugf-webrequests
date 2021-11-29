@@ -1,7 +1,7 @@
 {
   "name": "com.ugf.webrequests",
   "displayName": "UGF.WebRequests",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "unity": "2021.2",
   "apiCompatibility": ".NET Standard 2.0",
   "description": "Provides utilities to work with Web requests.",
