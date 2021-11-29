@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -104,14 +103,13 @@ namespace UGF.WebRequests.Runtime.Http
 
             if (listenerRequest.HasEntityBody)
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await listenerRequest.InputStream.CopyToAsync(memoryStream);
+                await using var memoryStream = new MemoryStream();
 
-                    byte[] bytes = memoryStream.ToArray();
+                await listenerRequest.InputStream.CopyToAsync(memoryStream);
 
-                    request.SetData(bytes);
-                }
+                byte[] bytes = memoryStream.ToArray();
+
+                request.SetData(bytes);
             }
 
             Log.Debug("Received web request", new
@@ -145,9 +143,9 @@ namespace UGF.WebRequests.Runtime.Http
 
             listenerResponse.StatusCode = (int)response.StatusCode;
 
-            foreach (KeyValuePair<string, string> pair in response.Headers)
+            foreach ((string key, string value) in response.Headers)
             {
-                listenerResponse.Headers[pair.Key] = pair.Value;
+                listenerResponse.Headers[key] = value;
             }
 
             if (response.HasData)
@@ -156,10 +154,9 @@ namespace UGF.WebRequests.Runtime.Http
                 {
                     listenerResponse.ContentLength64 = bytes.Length;
 
-                    using (var memoryStream = new MemoryStream(bytes))
-                    {
-                        await memoryStream.CopyToAsync(listenerResponse.OutputStream);
-                    }
+                    await using var memoryStream = new MemoryStream(bytes);
+
+                    await memoryStream.CopyToAsync(listenerResponse.OutputStream);
                 }
                 else
                 {

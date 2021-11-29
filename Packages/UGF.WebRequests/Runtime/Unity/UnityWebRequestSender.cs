@@ -84,7 +84,7 @@ namespace UGF.WebRequests.Runtime.Unity
                 response.SetData(unityWebRequest.downloadHandler.data);
             }
 
-            return Task.FromResult((IWebResponse)response);
+            return Task.FromResult<IWebResponse>(response);
         }
 
         protected virtual UnityWebRequest OnCreateWebRequest(IWebRequest request)
@@ -98,9 +98,9 @@ namespace UGF.WebRequests.Runtime.Unity
                 useHttpContinue = Description.UseHttpContinue
             };
 
-            foreach (KeyValuePair<string, string> pair in request.Headers)
+            foreach ((string key, string value) in request.Headers)
             {
-                unityWebRequest.SetRequestHeader(pair.Key, pair.Value);
+                unityWebRequest.SetRequestHeader(key, value);
             }
 
             OnCreateUploadHandler(request, unityWebRequest);
