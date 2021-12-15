@@ -78,10 +78,11 @@ namespace UGF.WebRequests.Runtime.Unity
             Dictionary<string, string> headers = unityWebRequest.GetResponseHeaders() ?? new Dictionary<string, string>();
             var statusCode = (HttpStatusCode)unityWebRequest.responseCode;
             var response = new WebResponse(headers, request.Method, request.Url, statusCode);
+            byte[] data = unityWebRequest.downloadHandler?.data;
 
-            if (unityWebRequest.downloadHandler != null)
+            if (data != null)
             {
-                response.SetData(unityWebRequest.downloadHandler.data);
+                response.SetData(data);
             }
 
             return Task.FromResult<IWebResponse>(response);
