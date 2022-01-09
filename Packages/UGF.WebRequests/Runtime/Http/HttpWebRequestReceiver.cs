@@ -109,7 +109,10 @@ namespace UGF.WebRequests.Runtime.Http
 
                 byte[] bytes = memoryStream.ToArray();
 
-                request.SetData(bytes);
+                if (bytes.Length > 0)
+                {
+                    request.SetData(bytes);
+                }
             }
 
             Log.Debug("Received web request", new
