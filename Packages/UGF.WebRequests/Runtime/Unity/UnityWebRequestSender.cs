@@ -80,7 +80,7 @@ namespace UGF.WebRequests.Runtime.Unity
             var response = new WebResponse(headers, request.Method, request.Url, statusCode);
             byte[] data = unityWebRequest.downloadHandler?.data;
 
-            if (data != null)
+            if (data != null && data.Length > 0)
             {
                 response.SetData(data);
             }
