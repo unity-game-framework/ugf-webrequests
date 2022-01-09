@@ -4,9 +4,9 @@ UGF.WebRequests
 
 ## Info
 
-- **Version**: `1.1.2`
+- **Version**: `1.1.3`
 - **Unity**: `2021.2`
-- **API Compatibility Level**: `.NET Standard 2.0`
+- **API Compatibility Level**: `.NET Standard 2.1`
 
 ### Dependencies
 
