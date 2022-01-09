@@ -84,7 +84,10 @@ namespace UGF.WebRequests.Runtime.Http
 
             byte[] bytes = await responseMessage.Content.ReadAsByteArrayAsync();
 
-            response.SetData(bytes);
+            if (bytes.Length > 0)
+            {
+                response.SetData(bytes);
+            }
 
             return response;
         }
