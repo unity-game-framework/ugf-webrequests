@@ -13,13 +13,19 @@ namespace UGF.WebRequests.Runtime.Http
         protected override IWebRequestReceiver OnBuild()
         {
             var description = new HttpWebRequestReceiverDescription();
+            IWebRequestReceiveHandler handler = OnBuildHandler();
 
             for (int i = 0; i < m_prefixes.Count; i++)
             {
                 description.Prefixes.Add(m_prefixes[i]);
             }
 
-            return new HttpWebRequestReceiver(description, new WebRequestReceiveHandler());
+            return new HttpWebRequestReceiver(description, handler);
+        }
+
+        protected virtual IWebRequestReceiveHandler OnBuildHandler()
+        {
+            return new WebRequestReceiveHandler();
         }
     }
 }
