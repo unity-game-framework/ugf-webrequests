@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/unity-game-framework/ugf-webrequests/releases/tag/1.2.0) - 2022-03-02  
+
+### Release Notes
+
+- [Milestone](https://github.com/unity-game-framework/ugf-webrequests/milestone/5?closed=1)  
+    
+
+### Added
+
+- Add sender and receiver builder assets ([#10](https://github.com/unity-game-framework/ugf-webrequests/issues/10))  
+    - Update dependencies: `com.ugf.initialize` to `2.8.0` version.
+    - Add `HttpWebRequestReceiverAsset` class as asset to build receiver for _Http_ solution.
+    - Add `HttpWebRequestSenderAsset` class as asset to build sender for _Http_ solution.
+    - Add `UnityWebRequestSenderAsset` class as asset to builder sender for _Unity_ solution.
+
 ## [1.1.3](https://github.com/unity-game-framework/ugf-webrequests/releases/tag/1.1.3) - 2022-01-09  
 
 ### Release Notes

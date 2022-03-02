@@ -2,15 +2,15 @@
 
 UGF.WebRequests
 
-## Info
+## Information
 
-- **Version**: `1.1.3`
+- **Version**: `1.2.0`
 - **Unity**: `2021.2`
 - **API Compatibility Level**: `.NET Standard 2.1`
 
 ### Dependencies
 
-- `com.ugf.initialize`: `2.7.0`
+- `com.ugf.initialize`: `2.8.0`
 - `com.ugf.description`: `2.0.0`
 - `com.ugf.logs`: `5.2.2`
 - `com.unity.modules.unitywebrequest`: `1.0.0`
