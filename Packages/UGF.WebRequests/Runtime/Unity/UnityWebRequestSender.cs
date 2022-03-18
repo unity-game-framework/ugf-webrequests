@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using UGF.Logs.Runtime;
+using UGF.RuntimeTools.Runtime.Encodings;
 using UnityEngine.Networking;
 
 namespace UGF.WebRequests.Runtime.Unity
@@ -79,6 +81,18 @@ namespace UGF.WebRequests.Runtime.Unity
             var statusCode = (HttpStatusCode)unityWebRequest.responseCode;
             var response = new WebResponse(headers, request.Method, request.Url, statusCode);
             byte[] data = unityWebRequest.downloadHandler?.data;
+
+            if (data == null)
+            {
+                string error = unityWebRequest.error;
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Encoding encoding = EncodingUtility.GetEncoding(Description.ErrorEncoding);
+
+                    data = encoding.GetBytes(error);
+                }
+            }
 
             if (data != null && data.Length > 0)
             {
