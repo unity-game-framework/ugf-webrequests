@@ -82,11 +82,7 @@ namespace UGF.WebRequests.Runtime.Unity
             var response = new WebResponse(headers, request.Method, request.Url, statusCode);
             byte[] data = unityWebRequest.downloadHandler?.data;
 
-            if (data != null && data.Length > 0)
-            {
-                response.SetData(data);
-            }
-            else
+            if (data == null)
             {
                 string error = unityWebRequest.error;
 
@@ -95,9 +91,12 @@ namespace UGF.WebRequests.Runtime.Unity
                     Encoding encoding = EncodingUtility.GetEncoding(Description.ErrorEncoding);
 
                     data = encoding.GetBytes(error);
-
-                    response.SetData(data);
                 }
+            }
+
+            if (data != null && data.Length > 0)
+            {
+                response.SetData(data);
             }
 
             return Task.FromResult<IWebResponse>(response);
