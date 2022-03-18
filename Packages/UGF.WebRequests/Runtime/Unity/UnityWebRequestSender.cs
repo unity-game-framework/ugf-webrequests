@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using UGF.Logs.Runtime;
+using UGF.RuntimeTools.Runtime.Encodings;
 using UnityEngine.Networking;
 
 namespace UGF.WebRequests.Runtime.Unity
@@ -83,6 +85,19 @@ namespace UGF.WebRequests.Runtime.Unity
             if (data != null && data.Length > 0)
             {
                 response.SetData(data);
+            }
+            else
+            {
+                string error = unityWebRequest.error;
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Encoding encoding = EncodingUtility.GetEncoding(Description.ErrorEncoding);
+
+                    data = encoding.GetBytes(error);
+
+                    response.SetData(data);
+                }
             }
 
             return Task.FromResult<IWebResponse>(response);

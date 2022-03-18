@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UGF.RuntimeTools.Runtime.Encodings;
+using UnityEngine;
 
 namespace UGF.WebRequests.Runtime.Unity
 {
@@ -8,10 +9,12 @@ namespace UGF.WebRequests.Runtime.Unity
         [SerializeField] private int m_redirectLimit = 10;
         [SerializeField] private int m_timeout;
         [SerializeField] private bool m_useHttpContinue = true;
+        [SerializeField] private EncodingType m_errorEncoding = EncodingType.Default;
 
         public int RedirectLimit { get { return m_redirectLimit; } set { m_redirectLimit = value; } }
         public int Timeout { get { return m_timeout; } set { m_timeout = value; } }
         public bool UseHttpContinue { get { return m_useHttpContinue; } set { m_useHttpContinue = value; } }
+        public EncodingType ErrorEncoding { get { return m_errorEncoding; } set { m_errorEncoding = value; } }
 
         protected override IWebRequestSender OnBuild()
         {
@@ -19,7 +22,8 @@ namespace UGF.WebRequests.Runtime.Unity
             {
                 RedirectLimit = m_redirectLimit,
                 Timeout = m_timeout,
-                UseHttpContinue = m_useHttpContinue
+                UseHttpContinue = m_useHttpContinue,
+                ErrorEncoding = m_errorEncoding
             };
 
             return new UnityWebRequestSender(description);
