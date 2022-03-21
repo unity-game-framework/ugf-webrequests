@@ -122,12 +122,17 @@ namespace UGF.WebRequests.Runtime.Http
                     message.Headers.Remove(key);
                 }
 
-                message.Headers.Add(key, value);
+                message.Headers.TryAddWithoutValidation(key, value);
             }
 
             if (request.TryGetData(out byte[] bytes))
             {
                 message.Content = new ByteArrayContent(bytes);
+
+                foreach ((string key, string value) in request.Headers)
+                {
+                    message.Content.Headers.TryAddWithoutValidation(key, value);
+                }
             }
 
             return message;
