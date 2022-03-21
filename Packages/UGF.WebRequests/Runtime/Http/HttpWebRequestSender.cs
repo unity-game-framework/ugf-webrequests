@@ -94,11 +94,17 @@ namespace UGF.WebRequests.Runtime.Http
 
         protected virtual HttpClient OnCreateClient()
         {
-            var client = new HttpClient
+            var client = new HttpClient();
+
+            if (Description.OverrideTimeout)
             {
-                Timeout = Description.Timeout,
-                MaxResponseContentBufferSize = Description.MaxResponseContentBufferSize
-            };
+                client.Timeout = Description.Timeout;
+            }
+
+            if (Description.OverrideMaxResponseContentBufferSize)
+            {
+                client.MaxResponseContentBufferSize = Description.MaxResponseContentBufferSize;
+            }
 
             return client;
         }
