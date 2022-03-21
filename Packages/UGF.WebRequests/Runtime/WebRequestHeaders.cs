@@ -1,4 +1,7 @@
-﻿namespace UGF.WebRequests.Runtime
+﻿using System.Collections.Generic;
+using System.Reflection;
+
+namespace UGF.WebRequests.Runtime
 {
     /// <summary>
     /// Defines constants for well-known HTTP headers.
@@ -274,5 +277,17 @@
 
         /// <summary>Gets the <c>X-Requested-With</c> HTTP header name.</summary>
         public static readonly string XRequestedWith = "X-Requested-With";
+
+        public static List<string> All { get; } = new List<string>();
+
+        static WebRequestHeaders()
+        {
+            FieldInfo[] fields = typeof(WebRequestHeaders).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static);
+
+            foreach (FieldInfo field in fields)
+            {
+                All.Add((string)field.GetValue(null));
+            }
+        }
     }
 }
