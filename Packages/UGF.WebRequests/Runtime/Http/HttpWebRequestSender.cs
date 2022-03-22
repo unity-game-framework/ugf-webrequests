@@ -117,11 +117,6 @@ namespace UGF.WebRequests.Runtime.Http
 
             foreach ((string key, string value) in request.Headers)
             {
-                if (message.Headers.Contains(key))
-                {
-                    message.Headers.Remove(key);
-                }
-
                 message.Headers.TryAddWithoutValidation(key, value);
             }
 
