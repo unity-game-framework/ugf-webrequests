@@ -1,0 +1,19 @@
+{
+    "name": "UGF.WebRequests.Editor",
+    "rootNamespace": "UGF.WebRequests.Editor",
+    "references": [
+        "GUID:4f9da6f8999f5d34e890f4e46a084210",
+        "GUID:abdd615e45137c74ca2ce9c636c78c15"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
