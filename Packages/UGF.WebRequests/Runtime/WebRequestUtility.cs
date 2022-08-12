@@ -38,23 +38,90 @@ namespace UGF.WebRequests.Runtime
             }
         }
 
-        public static bool TryParsCookie(string value, out WebCookie cookie)
+        public static bool TryParseCookie(string value, out WebCookie cookie)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
 
-            string[] parts = value.Split(';');
-            string[] nameAndValue = parts[0].Split('=');
+            string[] parts = value.Trim().Split(';');
+            string[] nameAndValue = parts[0].Trim().Split('=');
 
             if (nameAndValue.Length > 0 && !string.IsNullOrEmpty(nameAndValue[0]))
             {
                 cookie = nameAndValue.Length > 1
-                    ? new WebCookie(nameAndValue[0], nameAndValue[1])
-                    : new WebCookie(nameAndValue[0]);
+                    ? new WebCookie(nameAndValue[0].Trim(), nameAndValue[1].Trim())
+                    : new WebCookie(nameAndValue[0].Trim());
 
                 foreach (string part in parts[1..])
                 {
-                    string[] values = part.Split('=');
+                    string[] attributes = part.Split('=');
+
+                    if (attributes.Length > 1)
+                    {
+                        string attributeName = attributes[0].Trim().ToLowerInvariant();
+                        string attributeValue = attributes[1].Trim();
+
+                        switch (attributeName)
+                        {
+                            case "expires":
+                            {
+                                if (DateTimeOffset.TryParse(attributeValue, out DateTimeOffset expires))
+                                {
+                                    cookie.Expires = expires;
+                                }
+
+                                break;
+                            }
+                            case "max-age":
+                            {
+                                if (TimeSpan.TryParse(attributeValue, out TimeSpan maxAge))
+                                {
+                                    cookie.MaxAge = maxAge;
+                                }
+
+                                break;
+                            }
+                            case "domain":
+                            {
+                                cookie.Domain = attributeValue;
+                                break;
+                            }
+                            case "path":
+                            {
+                                cookie.Path = attributeValue;
+                                break;
+                            }
+                            case "secure":
+                            {
+                                if (bool.TryParse(attributeValue, out bool secure))
+                                {
+                                    cookie.Secure = secure;
+                                }
+
+                                break;
+                            }
+                            case "httponly":
+                            {
+                                if (bool.TryParse(attributeValue, out bool httpOnly))
+                                {
+                                    cookie.HttpOnly = httpOnly;
+                                }
+
+                                break;
+                            }
+                            case "SameSite":
+                            {
+                                if (Enum.TryParse(attributeValue, out WebCookieSameSite sameSite))
+                                {
+                                    cookie.SameSite = sameSite;
+                                }
+
+                                break;
+                            }
+                        }
+                    }
                 }
+
+                return true;
             }
 
             cookie = default;
