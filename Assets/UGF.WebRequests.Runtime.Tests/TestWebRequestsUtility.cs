@@ -1,4 +1,3 @@
-using System.Globalization;
 using NUnit.Framework;
 
 namespace UGF.WebRequests.Runtime.Tests
@@ -12,21 +11,26 @@ namespace UGF.WebRequests.Runtime.Tests
             bool result2 = WebRequestUtility.TryParseCookie("id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT", out WebCookie cookie2);
             bool result3 = WebRequestUtility.TryParseCookie("id=a3fWa; Max-Age=2592000", out WebCookie cookie3);
             bool result4 = WebRequestUtility.TryParseCookie("qwerty=219ffwef9w0f; Domain=somecompany.co.uk", out WebCookie cookie4);
+            bool result5 = WebRequestUtility.TryParseCookie("cook=value; Secure", out WebCookie cookie5);
 
             Assert.True(result1);
             Assert.True(result2);
             Assert.True(result3);
             Assert.True(result4);
+            Assert.True(result5);
             Assert.AreEqual("sessionId", cookie1.Name);
             Assert.AreEqual("38afes7a8", cookie1.Value);
             Assert.AreEqual("id", cookie2.Name);
             Assert.AreEqual("a3fWa", cookie2.Value);
             Assert.AreEqual("Wed, 21 Oct 2015 07:28:00 GMT", cookie2.Expires.ToString("R"));
             Assert.AreEqual("id", cookie3.Name);
-            Assert.AreEqual("2592000", cookie3.MaxAge.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(2592000D, cookie3.MaxAge.TotalSeconds);
             Assert.AreEqual("qwerty", cookie4.Name);
             Assert.AreEqual("219ffwef9w0f", cookie4.Value);
             Assert.AreEqual("somecompany.co.uk", cookie4.Domain);
+            Assert.AreEqual("cook", cookie5.Name);
+            Assert.AreEqual("value", cookie5.Value);
+            Assert.True(cookie5.Secure);
         }
     }
 }
