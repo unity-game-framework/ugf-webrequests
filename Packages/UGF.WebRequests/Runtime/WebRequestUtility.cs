@@ -55,10 +55,10 @@ namespace UGF.WebRequests.Runtime
                 {
                     string[] attributes = part.Split('=');
 
-                    if (attributes.Length > 1)
+                    if (attributes.Length > 0)
                     {
                         string attributeName = attributes[0].Trim().ToLowerInvariant();
-                        string attributeValue = attributes[1].Trim();
+                        string attributeValue = attributes.Length > 1 ? attributes[1].Trim() : string.Empty;
 
                         switch (attributeName)
                         {
@@ -73,9 +73,9 @@ namespace UGF.WebRequests.Runtime
                             }
                             case "max-age":
                             {
-                                if (TimeSpan.TryParse(attributeValue, out TimeSpan maxAge))
+                                if (double.TryParse(attributeValue, out double maxAge))
                                 {
-                                    cookie.MaxAge = maxAge;
+                                    cookie.MaxAge = TimeSpan.FromSeconds(maxAge);
                                 }
 
                                 break;
@@ -92,20 +92,12 @@ namespace UGF.WebRequests.Runtime
                             }
                             case "secure":
                             {
-                                if (bool.TryParse(attributeValue, out bool secure))
-                                {
-                                    cookie.Secure = secure;
-                                }
-
+                                cookie.Secure = true;
                                 break;
                             }
                             case "httponly":
                             {
-                                if (bool.TryParse(attributeValue, out bool httpOnly))
-                                {
-                                    cookie.HttpOnly = httpOnly;
-                                }
-
+                                cookie.HttpOnly = true;
                                 break;
                             }
                             case "SameSite":
