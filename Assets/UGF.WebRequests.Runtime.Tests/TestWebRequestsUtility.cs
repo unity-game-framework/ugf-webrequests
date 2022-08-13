@@ -140,6 +140,29 @@ namespace UGF.WebRequests.Runtime.Tests
             }
         }
 
+        [Test]
+        public void ParseCookiePairs()
+        {
+            var collection = new List<(string Name, string Value)>
+            {
+                ("cookie", "value"),
+                ("cookie", "value"),
+                ("empty", "")
+            };
+
+            List<(string Name, string Value)> result = WebRequestUtility.ParseCookiePairs("cookie=value; cookie=value; empty=");
+
+            Assert.AreEqual(collection.Count, result.Count);
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                (string name, string value) = result[i];
+
+                Assert.AreEqual(collection[i].Name, name);
+                Assert.AreEqual(collection[i].Value, value);
+            }
+        }
+
         private void AssertEqualCookie(WebCookie first, WebCookie second)
         {
             PropertyInfo[] properties = typeof(WebCookie).GetProperties();
