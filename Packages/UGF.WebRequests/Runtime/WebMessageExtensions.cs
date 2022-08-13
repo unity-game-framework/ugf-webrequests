@@ -5,13 +5,13 @@ namespace UGF.WebRequests.Runtime
 {
     public static class WebMessageExtensions
     {
-        public static bool TryGetResponseCookies(this IWebMessage message, out List<WebCookie> cookies)
+        public static bool TryGetResponseCookies(this IWebMessage message, out WebResponseCookieCollection cookies)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
             if (message.Headers.TryGetValue(WebRequestHeaders.SetCookie, out string value) && !string.IsNullOrEmpty(value))
             {
-                cookies = WebRequestUtility.ParseCookieCollection(value);
+                cookies = WebResponseCookieCollection.Parse(value);
                 return true;
             }
 
@@ -19,25 +19,23 @@ namespace UGF.WebRequests.Runtime
             return false;
         }
 
-        public static void SetResponseCookies(this IWebMessage message, IReadOnlyList<WebCookie> collection)
+        public static void SetResponseCookies(this IWebMessage message, IWebCookieCollection<WebResponseCookie> cookies)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            if (collection == null) throw new ArgumentNullException(nameof(collection));
-            if (collection.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(collection));
+            if (cookies == null) throw new ArgumentNullException(nameof(cookies));
+            if (cookies.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(cookies));
             if (message.Headers is not IDictionary<string, string> headers) throw new InvalidOperationException("Can not edit headers.");
 
-            string value = WebRequestUtility.FormatCookieCollection(collection);
-
-            headers[WebRequestHeaders.SetCookie] = value;
+            headers[WebRequestHeaders.SetCookie] = cookies.Format();
         }
 
-        public static bool TryGetRequestCookies(this IWebMessage message, out List<(string Name, string Value)> cookies)
+        public static bool TryGetRequestCookies(this IWebMessage message, out WebRequestCookieCollection cookies)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
             if (message.Headers.TryGetValue(WebRequestHeaders.Cookie, out string value) && !string.IsNullOrEmpty(value))
             {
-                cookies = WebRequestUtility.ParseCookiePairs(value);
+                cookies = WebRequestCookieCollection.Parse(value);
                 return true;
             }
 
@@ -45,16 +43,14 @@ namespace UGF.WebRequests.Runtime
             return false;
         }
 
-        public static void SetRequestCookies(this IWebMessage message, IReadOnlyList<(string Name, string Value)> collection)
+        public static void SetRequestCookies(this IWebMessage message, IWebCookieCollection<WebRequestCookie> cookies)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            if (collection == null) throw new ArgumentNullException(nameof(collection));
-            if (collection.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(collection));
+            if (cookies == null) throw new ArgumentNullException(nameof(cookies));
+            if (cookies.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(cookies));
             if (message.Headers is not IDictionary<string, string> headers) throw new InvalidOperationException("Can not edit headers.");
 
-            string value = WebRequestUtility.FormatCookiePairs(collection);
-
-            headers[WebRequestHeaders.Cookie] = value;
+            headers[WebRequestHeaders.Cookie] = cookies.Format();
         }
     }
 }

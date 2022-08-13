@@ -6,13 +6,13 @@ using NUnit.Framework;
 
 namespace UGF.WebRequests.Runtime.Tests
 {
-    public class TestWebRequestsUtility
+    public class TestWebRequestCookieUtility
     {
-        private readonly List<(string value, WebCookie cookie)> m_cookiesFormat = new List<(string value, WebCookie)>
+        private readonly List<(string value, WebResponseCookie cookie)> m_cookiesFormat = new List<(string value, WebResponseCookie)>
         {
-            ("cookie=", new WebCookie("cookie")),
-            ("cookie=value", new WebCookie("cookie", "value")),
-            ("cookie=value; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Max-Age=556460; Domain=test.com; Path=/path; Secure; HttpOnly; SameSite=Strict", new WebCookie("cookie", "value")
+            ("cookie=", new WebResponseCookie("cookie")),
+            ("cookie=value", new WebResponseCookie("cookie", "value")),
+            ("cookie=value; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Max-Age=556460; Domain=test.com; Path=/path; Secure; HttpOnly; SameSite=Strict", new WebResponseCookie("cookie", "value")
             {
                 Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
                 MaxAge = TimeSpan.FromSeconds(556460D),
@@ -24,12 +24,12 @@ namespace UGF.WebRequests.Runtime.Tests
             })
         };
 
-        private readonly List<(string value, WebCookie cookie)> m_cookiesValid = new List<(string value, WebCookie)>
+        private readonly List<(string value, WebResponseCookie cookie)> m_cookiesValid = new List<(string value, WebResponseCookie)>
         {
-            ("cookie", new WebCookie("cookie")),
-            ("cookie=", new WebCookie("cookie")),
-            ("cookie=value", new WebCookie("cookie", "value")),
-            ("cookie=value; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Max-Age=556460; Domain=test.com; Path=/path; Secure; HttpOnly; SameSite=Strict", new WebCookie("cookie", "value")
+            ("cookie", new WebResponseCookie("cookie")),
+            ("cookie=", new WebResponseCookie("cookie")),
+            ("cookie=value", new WebResponseCookie("cookie", "value")),
+            ("cookie=value; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Max-Age=556460; Domain=test.com; Path=/path; Secure; HttpOnly; SameSite=Strict", new WebResponseCookie("cookie", "value")
             {
                 Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
                 MaxAge = TimeSpan.FromSeconds(556460D),
@@ -39,7 +39,7 @@ namespace UGF.WebRequests.Runtime.Tests
                 HttpOnly = true,
                 SameSite = WebCookieSameSite.Strict
             }),
-            ("cookie=value;Expires=Wed, 21 Oct 2015 07:28:00 GMT;Max-Age=556460;Domain=test.com;Path=/path;Secure;HttpOnly;SameSite=Strict", new WebCookie("cookie", "value")
+            ("cookie=value;Expires=Wed, 21 Oct 2015 07:28:00 GMT;Max-Age=556460;Domain=test.com;Path=/path;Secure;HttpOnly;SameSite=Strict", new WebResponseCookie("cookie", "value")
             {
                 Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
                 MaxAge = TimeSpan.FromSeconds(556460D),
@@ -49,7 +49,7 @@ namespace UGF.WebRequests.Runtime.Tests
                 HttpOnly = true,
                 SameSite = WebCookieSameSite.Strict
             }),
-            ("cookie=value; Domain=test.com; Expires=Wed, 21 Oct 2015 07:28:00 GMT; HttpOnly; Max-Age=556460; SameSite=Strict; Path=/path; Secure", new WebCookie("cookie", "value")
+            ("cookie=value; Domain=test.com; Expires=Wed, 21 Oct 2015 07:28:00 GMT; HttpOnly; Max-Age=556460; SameSite=Strict; Path=/path; Secure", new WebResponseCookie("cookie", "value")
             {
                 Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
                 MaxAge = TimeSpan.FromSeconds(556460D),
@@ -59,7 +59,7 @@ namespace UGF.WebRequests.Runtime.Tests
                 HttpOnly = true,
                 SameSite = WebCookieSameSite.Strict
             }),
-            ("cookie=value; expires=Wed, 21 Oct 2015 07:28:00 GMT; max-age=556460; domain=test.com; path=/path; secure; httponly; samesite=Strict", new WebCookie("cookie", "value")
+            ("cookie=value; expires=Wed, 21 Oct 2015 07:28:00 GMT; max-age=556460; domain=test.com; path=/path; secure; httponly; samesite=Strict", new WebResponseCookie("cookie", "value")
             {
                 Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
                 MaxAge = TimeSpan.FromSeconds(556460D),
@@ -69,7 +69,7 @@ namespace UGF.WebRequests.Runtime.Tests
                 HttpOnly = true,
                 SameSite = WebCookieSameSite.Strict
             }),
-            ("cookie=value; expires=Wed, 21 Oct 2015 07:28:00 GMT; max-age=556460; domain=test.com; attribute=value; path=/path; secure; httponly; samesite=Strict", new WebCookie("cookie", "value")
+            ("cookie=value; expires=Wed, 21 Oct 2015 07:28:00 GMT; max-age=556460; domain=test.com; attribute=value; path=/path; secure; httponly; samesite=Strict", new WebResponseCookie("cookie", "value")
             {
                 Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
                 MaxAge = TimeSpan.FromSeconds(556460D),
@@ -84,9 +84,9 @@ namespace UGF.WebRequests.Runtime.Tests
         [Test]
         public void ParseCookieValid()
         {
-            foreach ((string value, WebCookie cookie) in m_cookiesValid)
+            foreach ((string value, WebResponseCookie cookie) in m_cookiesValid)
             {
-                WebCookie cookieResult = WebRequestUtility.ParseCookie(value);
+                WebResponseCookie cookieResult = WebRequestCookieUtility.ParseCookie(value);
 
                 AssertEqualCookie(cookie, cookieResult);
             }
@@ -95,20 +95,20 @@ namespace UGF.WebRequests.Runtime.Tests
         [Test]
         public void ParseCookieInvalid()
         {
-            Assert.Throws<ArgumentException>(() => WebRequestUtility.ParseCookie(""));
-            Assert.Throws<ArgumentException>(() => WebRequestUtility.ParseCookie(";"));
-            Assert.Throws<ArgumentException>(() => WebRequestUtility.ParseCookie(";=value"));
-            Assert.Throws<ArgumentException>(() => WebRequestUtility.ParseCookie("cookie@=value"));
+            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie(""));
+            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie(";"));
+            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie(";=value"));
+            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie("cookie@=value"));
         }
 
         [Test]
         public void TryParseCookie()
         {
-            bool result1 = WebRequestUtility.TryParseCookie("sessionId=38afes7a8", out WebCookie cookie1);
-            bool result2 = WebRequestUtility.TryParseCookie("id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT", out WebCookie cookie2);
-            bool result3 = WebRequestUtility.TryParseCookie("id=a3fWa; Max-Age=2592000", out WebCookie cookie3);
-            bool result4 = WebRequestUtility.TryParseCookie("qwerty=219ffwef9w0f; Domain=somecompany.co.uk", out WebCookie cookie4);
-            bool result5 = WebRequestUtility.TryParseCookie("cook=value; Secure", out WebCookie cookie5);
+            bool result1 = WebRequestCookieUtility.TryParseCookie("sessionId=38afes7a8", out WebResponseCookie cookie1);
+            bool result2 = WebRequestCookieUtility.TryParseCookie("id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT", out WebResponseCookie cookie2);
+            bool result3 = WebRequestCookieUtility.TryParseCookie("id=a3fWa; Max-Age=2592000", out WebResponseCookie cookie3);
+            bool result4 = WebRequestCookieUtility.TryParseCookie("qwerty=219ffwef9w0f; Domain=somecompany.co.uk", out WebResponseCookie cookie4);
+            bool result5 = WebRequestCookieUtility.TryParseCookie("cook=value; Secure", out WebResponseCookie cookie5);
 
             Assert.True(result1);
             Assert.True(result2);
@@ -133,9 +133,9 @@ namespace UGF.WebRequests.Runtime.Tests
         [Test]
         public void FormatCookie()
         {
-            foreach ((string value, WebCookie cookie) in m_cookiesFormat)
+            foreach ((string value, WebResponseCookie cookie) in m_cookiesFormat)
             {
-                string result = WebRequestUtility.FormatCookie(cookie);
+                string result = WebRequestCookieUtility.FormatCookie(cookie);
 
                 Assert.AreEqual(result, value);
             }
@@ -151,7 +151,7 @@ namespace UGF.WebRequests.Runtime.Tests
                 ("empty", "")
             };
 
-            List<(string Name, string Value)> result = WebRequestUtility.ParseCookiePairs("cookie=value; cookie=value; empty=");
+            List<(string Name, string Value)> result = WebRequestCookieUtility.ParseCookiePairs("cookie=value; cookie=value; empty=");
 
             Assert.AreEqual(collection.Count, result.Count);
 
@@ -174,7 +174,7 @@ namespace UGF.WebRequests.Runtime.Tests
                 ("empty", "")
             };
 
-            string result = WebRequestUtility.FormatCookiePairs(collection);
+            string result = WebRequestCookieUtility.FormatCookiePairs(collection);
 
             Assert.AreEqual("cookie=value; cookie=value; empty=", result);
         }
@@ -184,7 +184,7 @@ namespace UGF.WebRequests.Runtime.Tests
         {
             string value = string.Join(',', m_cookiesValid.Select(x => x.value));
 
-            List<WebCookie> result = WebRequestUtility.ParseCookieCollection(value);
+            List<WebResponseCookie> result = WebRequestCookieUtility.ParseCookieCollection(value);
 
             for (int i = 0; i < result.Count; i++)
             {
@@ -197,9 +197,9 @@ namespace UGF.WebRequests.Runtime.Tests
         [Test]
         public void FormatCookieCollection()
         {
-            string value = WebRequestUtility.FormatCookieCollection(m_cookiesValid.Select(x => x.cookie).ToList());
+            string value = WebRequestCookieUtility.FormatCookieCollection(m_cookiesValid.Select(x => x.cookie).ToList());
 
-            List<WebCookie> result = WebRequestUtility.ParseCookieCollection(value);
+            List<WebResponseCookie> result = WebRequestCookieUtility.ParseCookieCollection(value);
 
             for (int i = 0; i < result.Count; i++)
             {
@@ -209,9 +209,9 @@ namespace UGF.WebRequests.Runtime.Tests
             Assert.Pass($"Parsing cookie collection: {value}");
         }
 
-        private void AssertEqualCookie(WebCookie first, WebCookie second)
+        private void AssertEqualCookie(WebResponseCookie first, WebResponseCookie second)
         {
-            PropertyInfo[] properties = typeof(WebCookie).GetProperties();
+            PropertyInfo[] properties = typeof(WebResponseCookie).GetProperties();
 
             foreach (PropertyInfo property in properties)
             {
