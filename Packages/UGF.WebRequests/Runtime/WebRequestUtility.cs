@@ -40,84 +40,94 @@ namespace UGF.WebRequests.Runtime
 
         public static bool TryParseCookie(string value, out WebCookie cookie)
         {
+            try
+            {
+                cookie = ParseCookie(value);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                cookie = default;
+                return false;
+            }
+        }
+
+        public static WebCookie ParseCookie(string value)
+        {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
 
             string[] parts = value.Trim().Split(';');
             string[] nameAndValue = parts[0].Trim().Split('=');
 
-            if (nameAndValue.Length > 0 && !string.IsNullOrEmpty(nameAndValue[0]))
+            if (nameAndValue.Length <= 0 || string.IsNullOrEmpty(nameAndValue[0])) throw new ArgumentException("Name not found.");
+
+            WebCookie cookie = nameAndValue.Length > 1
+                ? new WebCookie(nameAndValue[0].Trim(), nameAndValue[1].Trim())
+                : new WebCookie(nameAndValue[0].Trim());
+
+            foreach (string part in parts[1..])
             {
-                cookie = nameAndValue.Length > 1
-                    ? new WebCookie(nameAndValue[0].Trim(), nameAndValue[1].Trim())
-                    : new WebCookie(nameAndValue[0].Trim());
+                string[] attributes = part.Split('=');
 
-                foreach (string part in parts[1..])
+                if (attributes.Length > 0)
                 {
-                    string[] attributes = part.Split('=');
+                    string attributeName = attributes[0].Trim().ToLowerInvariant();
+                    string attributeValue = attributes.Length > 1 ? attributes[1].Trim() : string.Empty;
 
-                    if (attributes.Length > 0)
+                    switch (attributeName)
                     {
-                        string attributeName = attributes[0].Trim().ToLowerInvariant();
-                        string attributeValue = attributes.Length > 1 ? attributes[1].Trim() : string.Empty;
-
-                        switch (attributeName)
+                        case "expires":
                         {
-                            case "expires":
+                            if (DateTimeOffset.TryParse(attributeValue, out DateTimeOffset expires))
                             {
-                                if (DateTimeOffset.TryParse(attributeValue, out DateTimeOffset expires))
-                                {
-                                    cookie.Expires = expires;
-                                }
+                                cookie.Expires = expires;
+                            }
 
-                                break;
-                            }
-                            case "max-age":
+                            break;
+                        }
+                        case "max-age":
+                        {
+                            if (double.TryParse(attributeValue, out double maxAge))
                             {
-                                if (double.TryParse(attributeValue, out double maxAge))
-                                {
-                                    cookie.MaxAge = TimeSpan.FromSeconds(maxAge);
-                                }
+                                cookie.MaxAge = TimeSpan.FromSeconds(maxAge);
+                            }
 
-                                break;
-                            }
-                            case "domain":
+                            break;
+                        }
+                        case "domain":
+                        {
+                            cookie.Domain = attributeValue;
+                            break;
+                        }
+                        case "path":
+                        {
+                            cookie.Path = attributeValue;
+                            break;
+                        }
+                        case "secure":
+                        {
+                            cookie.Secure = true;
+                            break;
+                        }
+                        case "httponly":
+                        {
+                            cookie.HttpOnly = true;
+                            break;
+                        }
+                        case "samesite":
+                        {
+                            if (Enum.TryParse(attributeValue, true, out WebCookieSameSite sameSite))
                             {
-                                cookie.Domain = attributeValue;
-                                break;
+                                cookie.SameSite = sameSite;
                             }
-                            case "path":
-                            {
-                                cookie.Path = attributeValue;
-                                break;
-                            }
-                            case "secure":
-                            {
-                                cookie.Secure = true;
-                                break;
-                            }
-                            case "httponly":
-                            {
-                                cookie.HttpOnly = true;
-                                break;
-                            }
-                            case "samesite":
-                            {
-                                if (Enum.TryParse(attributeValue, true, out WebCookieSameSite sameSite))
-                                {
-                                    cookie.SameSite = sameSite;
-                                }
 
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
-
-                return true;
             }
 
-            cookie = default;
-            return false;
+            return cookie;
         }
 
         public static bool IsValidCookieName(string name)
