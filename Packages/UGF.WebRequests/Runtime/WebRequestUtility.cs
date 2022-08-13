@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace UGF.WebRequests.Runtime
 {
@@ -37,6 +38,31 @@ namespace UGF.WebRequests.Runtime
                 {
                     throw new ArgumentOutOfRangeException(nameof(method), method, "Unknown method name specified.");
                 }
+            }
+        }
+
+        public static List<WebCookie> ParseCookieCollection(string value)
+        {
+            var result = new List<WebCookie>();
+
+            ParseCookieCollection(value, result);
+
+            return result;
+        }
+
+        public static void ParseCookieCollection(string value, ICollection<WebCookie> result)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
+
+            value = new Regex("(?<=Expires=).{29}", RegexOptions.IgnoreCase).Replace(value, match => DateTimeOffset.Parse(match.Value).ToString("O"));
+
+            string[] values = value.TrimEnd(';').Split(',');
+
+            foreach (string cookieValue in values)
+            {
+                WebCookie cookie = ParseCookie(cookieValue.Trim());
+
+                result.Add(cookie);
             }
         }
 
