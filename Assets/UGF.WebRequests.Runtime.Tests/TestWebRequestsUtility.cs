@@ -79,10 +79,6 @@ namespace UGF.WebRequests.Runtime.Tests
                 Secure = true,
                 HttpOnly = true,
                 SameSite = WebCookieSameSite.Strict
-            }),
-            ("cookie=value; Expires=2022-08-13 15:36:43.651", new WebCookie("cookie", "value")
-            {
-                Expires = DateTimeOffset.Parse("2022-08-13 15:36:43.651")
             })
         };
 
@@ -173,6 +169,21 @@ namespace UGF.WebRequests.Runtime.Tests
         public void ParseCookieCollection()
         {
             string value = string.Join(',', m_cookiesValid.Select(x => x.value));
+
+            Debug.Log($"Parsing cookie collection: {value}");
+
+            List<WebCookie> result = WebRequestUtility.ParseCookieCollection(value);
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                AssertEqualCookie(m_cookiesValid[i].cookie, result[i]);
+            }
+        }
+
+        [Test]
+        public void FormatCookieCollection()
+        {
+            string value = WebRequestUtility.FormatCookieCollection(m_cookiesValid.Select(x => x.cookie).ToList());
 
             Debug.Log($"Parsing cookie collection: {value}");
 
