@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace UGF.WebRequests.Runtime.Tests
 {
     public class TestWebRequestsUtility
     {
-        private readonly List<(string value, WebCookie)> m_cookiesFormat = new List<(string value, WebCookie)>
+        private readonly List<(string value, WebCookie cookie)> m_cookiesFormat = new List<(string value, WebCookie)>
         {
             ("cookie=", new WebCookie("cookie")),
             ("cookie=value", new WebCookie("cookie", "value")),
@@ -23,7 +25,7 @@ namespace UGF.WebRequests.Runtime.Tests
             })
         };
 
-        private readonly List<(string value, WebCookie)> m_cookiesValid = new List<(string value, WebCookie)>
+        private readonly List<(string value, WebCookie cookie)> m_cookiesValid = new List<(string value, WebCookie)>
         {
             ("cookie", new WebCookie("cookie")),
             ("cookie=", new WebCookie("cookie")),
@@ -77,6 +79,10 @@ namespace UGF.WebRequests.Runtime.Tests
                 Secure = true,
                 HttpOnly = true,
                 SameSite = WebCookieSameSite.Strict
+            }),
+            ("cookie=value; Expires=2022-08-13 15:36:43.651", new WebCookie("cookie", "value")
+            {
+                Expires = DateTimeOffset.Parse("2022-08-13 15:36:43.651")
             })
         };
 
@@ -160,6 +166,21 @@ namespace UGF.WebRequests.Runtime.Tests
 
                 Assert.AreEqual(collection[i].Name, name);
                 Assert.AreEqual(collection[i].Value, value);
+            }
+        }
+
+        [Test]
+        public void ParseCookieCollection()
+        {
+            string value = string.Join(',', m_cookiesValid.Select(x => x.value));
+
+            Debug.Log($"Parsing cookie collection: {value}");
+
+            List<WebCookie> result = WebRequestUtility.ParseCookieCollection(value);
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                AssertEqualCookie(m_cookiesValid[i].cookie, result[i]);
             }
         }
 
