@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace UGF.WebRequests.Runtime
@@ -193,6 +194,25 @@ namespace UGF.WebRequests.Runtime
             }
 
             return builder.ToString();
+        }
+
+        public static List<(string Name, string Value)> ParseCookiePairs(string value)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
+
+            var collection = new List<(string Name, string Value)>();
+            string[] parts = value.Split(';');
+
+            foreach (string part in parts)
+            {
+                string[] pair = part.Split('=');
+                string cookieName = pair[0].Trim();
+                string cookieValue = pair.Length > 1 ? pair[1].Trim() : string.Empty;
+
+                collection.Add((cookieName, cookieValue));
+            }
+
+            return collection;
         }
 
         public static bool IsValidCookieName(string name)
