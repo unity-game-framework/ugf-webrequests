@@ -200,7 +200,18 @@ namespace UGF.WebRequests.Runtime
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
 
-            var collection = new List<(string Name, string Value)>();
+            var result = new List<(string Name, string Value)>();
+
+            ParseCookiePairs(value, result);
+
+            return result;
+        }
+
+        public static void ParseCookiePairs(string value, ICollection<(string Name, string Value)> result)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
+            if (result == null) throw new ArgumentNullException(nameof(result));
+
             string[] parts = value.Split(';');
 
             foreach (string part in parts)
@@ -209,10 +220,8 @@ namespace UGF.WebRequests.Runtime
                 string cookieName = pair[0].Trim();
                 string cookieValue = pair.Length > 1 ? pair[1].Trim() : string.Empty;
 
-                collection.Add((cookieName, cookieValue));
+                result.Add((cookieName, cookieValue));
             }
-
-            return collection;
         }
 
         public static bool IsValidCookieName(string name)
