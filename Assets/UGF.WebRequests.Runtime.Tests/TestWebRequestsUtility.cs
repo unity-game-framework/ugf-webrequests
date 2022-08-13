@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace UGF.WebRequests.Runtime.Tests
 {
@@ -166,11 +165,24 @@ namespace UGF.WebRequests.Runtime.Tests
         }
 
         [Test]
+        public void FormatCookiePairs()
+        {
+            var collection = new List<(string Name, string Value)>
+            {
+                ("cookie", "value"),
+                ("cookie", "value"),
+                ("empty", "")
+            };
+
+            string result = WebRequestUtility.FormatCookiePairs(collection);
+
+            Assert.AreEqual("cookie=value; cookie=value; empty=", result);
+        }
+
+        [Test]
         public void ParseCookieCollection()
         {
             string value = string.Join(',', m_cookiesValid.Select(x => x.value));
-
-            Debug.Log($"Parsing cookie collection: {value}");
 
             List<WebCookie> result = WebRequestUtility.ParseCookieCollection(value);
 
@@ -178,6 +190,8 @@ namespace UGF.WebRequests.Runtime.Tests
             {
                 AssertEqualCookie(m_cookiesValid[i].cookie, result[i]);
             }
+
+            Assert.Pass($"Parsing cookie collection: {value}");
         }
 
         [Test]
@@ -185,14 +199,14 @@ namespace UGF.WebRequests.Runtime.Tests
         {
             string value = WebRequestUtility.FormatCookieCollection(m_cookiesValid.Select(x => x.cookie).ToList());
 
-            Debug.Log($"Parsing cookie collection: {value}");
-
             List<WebCookie> result = WebRequestUtility.ParseCookieCollection(value);
 
             for (int i = 0; i < result.Count; i++)
             {
                 AssertEqualCookie(m_cookiesValid[i].cookie, result[i]);
             }
+
+            Assert.Pass($"Parsing cookie collection: {value}");
         }
 
         private void AssertEqualCookie(WebCookie first, WebCookie second)
