@@ -35,5 +35,50 @@ namespace UGF.WebRequests.Runtime
         {
             return !string.IsNullOrEmpty(Name);
         }
+
+        public bool Equals(WebCookie other)
+        {
+            return Name == other.Name
+                   && Value == other.Value
+                   && Expires.Equals(other.Expires)
+                   && MaxAge.Equals(other.MaxAge)
+                   && Domain == other.Domain
+                   && Path == other.Path
+                   && Secure == other.Secure
+                   && HttpOnly == other.HttpOnly
+                   && SameSite == other.SameSite;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is WebCookie other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+
+            hashCode.Add(Name);
+            hashCode.Add(Value);
+            hashCode.Add(Expires);
+            hashCode.Add(MaxAge);
+            hashCode.Add(Domain);
+            hashCode.Add(Path);
+            hashCode.Add(Secure);
+            hashCode.Add(HttpOnly);
+            hashCode.Add((int)SameSite);
+
+            return hashCode.ToHashCode();
+        }
+
+        public static bool operator ==(WebCookie first, WebCookie second)
+        {
+            return first.Equals(second);
+        }
+
+        public static bool operator !=(WebCookie first, WebCookie second)
+        {
+            return !first.Equals(second);
+        }
     }
 }
