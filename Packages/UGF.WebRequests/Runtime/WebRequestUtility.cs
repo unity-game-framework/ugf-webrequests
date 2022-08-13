@@ -100,9 +100,9 @@ namespace UGF.WebRequests.Runtime
                                 cookie.HttpOnly = true;
                                 break;
                             }
-                            case "SameSite":
+                            case "samesite":
                             {
-                                if (Enum.TryParse(attributeValue, out WebCookieSameSite sameSite))
+                                if (Enum.TryParse(attributeValue, true, out WebCookieSameSite sameSite))
                                 {
                                     cookie.SameSite = sameSite;
                                 }
