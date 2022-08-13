@@ -58,7 +58,7 @@ namespace UGF.WebRequests.Runtime
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
 
-            string[] parts = value.Trim().Split(';');
+            string[] parts = value.TrimEnd(';').Split(';');
             string[] nameAndValue = parts[0].Trim().Split('=');
 
             if (nameAndValue.Length <= 0 || string.IsNullOrEmpty(nameAndValue[0])) throw new ArgumentException("Name not found.");
@@ -212,7 +212,7 @@ namespace UGF.WebRequests.Runtime
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
             if (result == null) throw new ArgumentNullException(nameof(result));
 
-            string[] parts = value.Split(';');
+            string[] parts = value.TrimEnd(';').Split(';');
 
             foreach (string part in parts)
             {
