@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0](https://github.com/unity-game-framework/ugf-webrequests/releases/tag/1.5.0) - 2022-08-13  
+
+### Release Notes
+
+- [Milestone](https://github.com/unity-game-framework/ugf-webrequests/milestone/10?closed=1)  
+    
+
+### Added
+
+- Add methods to work with cookies ([#23](https://github.com/unity-game-framework/ugf-webrequests/issues/23))  
+    - Update dependencies: `com.ugf.runtimetools` to `2.15.0` version.
+    - Add `IWebMessage.TryGetResponseCookies()`, `SetResponseCookies()`, `TryGetRequestCookies()` and `SetRequestCookies()` extension methods to work with cookies.
+    - Add `WebRequestCookie` and `WebResponseCookie` structures to define, parse and format cookie data.
+    - Add `WebRequestCookieCollection` and `WebResponseCookieCollection` classes as collection to work, parse and format combined cookie data.
+
 ## [1.4.0](https://github.com/unity-game-framework/ugf-webrequests/releases/tag/1.4.0) - 2022-07-14  
 
 ### Release Notes
