@@ -5,13 +5,18 @@ namespace UGF.WebRequests.Runtime
 {
     public static class WebMessageExtensions
     {
-        public static IList<WebCookie> GetResponseCookies(this IWebMessage message)
+        public static bool TryGetResponseCookies(this IWebMessage message, out List<WebCookie> cookies)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            return message.Headers.TryGetValue(WebRequestHeaders.SetCookie, out string value) && !string.IsNullOrEmpty(value)
-                ? WebRequestUtility.ParseCookieCollection(value)
-                : new List<WebCookie>();
+            if (message.Headers.TryGetValue(WebRequestHeaders.SetCookie, out string value) && !string.IsNullOrEmpty(value))
+            {
+                cookies = WebRequestUtility.ParseCookieCollection(value);
+                return true;
+            }
+
+            cookies = default;
+            return false;
         }
 
         public static void SetResponseCookies(this IWebMessage message, IReadOnlyList<WebCookie> collection)
@@ -26,13 +31,18 @@ namespace UGF.WebRequests.Runtime
             headers[WebRequestHeaders.SetCookie] = value;
         }
 
-        public static IList<(string Name, string Value)> GetRequestCookies(this IWebMessage message)
+        public static bool TryGetRequestCookies(this IWebMessage message, out List<(string Name, string Value)> cookies)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            return message.Headers.TryGetValue(WebRequestHeaders.Cookie, out string value) && !string.IsNullOrEmpty(value)
-                ? WebRequestUtility.ParseCookiePairs(value)
-                : new List<(string Name, string Value)>();
+            if (message.Headers.TryGetValue(WebRequestHeaders.Cookie, out string value) && !string.IsNullOrEmpty(value))
+            {
+                cookies = WebRequestUtility.ParseCookiePairs(value);
+                return true;
+            }
+
+            cookies = default;
+            return false;
         }
 
         public static void SetRequestCookies(this IWebMessage message, IReadOnlyList<(string Name, string Value)> collection)
