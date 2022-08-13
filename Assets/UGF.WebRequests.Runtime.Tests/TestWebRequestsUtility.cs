@@ -1,9 +1,77 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace UGF.WebRequests.Runtime.Tests
 {
     public class TestWebRequestsUtility
     {
+        private readonly List<(string value, WebCookie)> m_cookiesValid = new List<(string value, WebCookie)>
+        {
+            ("cookie=", new WebCookie("cookie")),
+            ("cookie=value", new WebCookie("cookie", "value")),
+            ("cookie=value; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Max-Age=556460; Domain=test.com; Path=/path; Secure; HttpOnly; SameSite=Strict", new WebCookie("cookie", "value")
+            {
+                Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
+                MaxAge = TimeSpan.FromSeconds(556460D),
+                Domain = "test.com",
+                Path = "/path",
+                Secure = true,
+                HttpOnly = true,
+                SameSite = WebCookieSameSite.Strict
+            }),
+            ("cookie=value; Domain=test.com; Expires=Wed, 21 Oct 2015 07:28:00 GMT; HttpOnly; Max-Age=556460; SameSite=Strict; Path=/path; Secure", new WebCookie("cookie", "value")
+            {
+                Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
+                MaxAge = TimeSpan.FromSeconds(556460D),
+                Domain = "test.com",
+                Path = "/path",
+                Secure = true,
+                HttpOnly = true,
+                SameSite = WebCookieSameSite.Strict
+            }),
+            ("cookie=value; expires=Wed, 21 Oct 2015 07:28:00 GMT; max-age=556460; domain=test.com; path=/path; secure; httponly; samesite=Strict", new WebCookie("cookie", "value")
+            {
+                Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
+                MaxAge = TimeSpan.FromSeconds(556460D),
+                Domain = "test.com",
+                Path = "/path",
+                Secure = true,
+                HttpOnly = true,
+                SameSite = WebCookieSameSite.Strict
+            }),
+            ("cookie=value; expires=Wed, 21 Oct 2015 07:28:00 GMT; max-age=556460; domain=test.com; attribute=value; path=/path; secure; httponly; samesite=Strict", new WebCookie("cookie", "value")
+            {
+                Expires = DateTimeOffset.Parse("Wed, 21 Oct 2015 07:28:00 GMT"),
+                MaxAge = TimeSpan.FromSeconds(556460D),
+                Domain = "test.com",
+                Path = "/path",
+                Secure = true,
+                HttpOnly = true,
+                SameSite = WebCookieSameSite.Strict
+            })
+        };
+
+        [Test]
+        public void ParseCookieValid()
+        {
+            foreach ((string value, WebCookie cookie) in m_cookiesValid)
+            {
+                WebCookie cookieResult = WebRequestUtility.ParseCookie(value);
+
+                AssertEqualCookie(cookie, cookieResult);
+            }
+        }
+
+        [Test]
+        public void ParseCookieInvalid()
+        {
+            Assert.Throws<ArgumentException>(() => WebRequestUtility.ParseCookie(""));
+            Assert.Throws<ArgumentException>(() => WebRequestUtility.ParseCookie(";"));
+            Assert.Throws<ArgumentException>(() => WebRequestUtility.ParseCookie(";=value"));
+        }
+
         [Test]
         public void TryParseCookie()
         {
@@ -31,6 +99,16 @@ namespace UGF.WebRequests.Runtime.Tests
             Assert.AreEqual("cook", cookie5.Name);
             Assert.AreEqual("value", cookie5.Value);
             Assert.True(cookie5.Secure);
+        }
+
+        private void AssertEqualCookie(WebCookie first, WebCookie second)
+        {
+            PropertyInfo[] properties = typeof(WebCookie).GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                Assert.AreEqual(property.GetValue(first), property.GetValue(second), "{0}", property.Name);
+            }
         }
     }
 }
