@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace UGF.WebRequests.Runtime
 {
@@ -45,7 +46,7 @@ namespace UGF.WebRequests.Runtime
                 cookie = ParseCookie(value);
                 return true;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 cookie = default;
                 return false;
@@ -128,6 +129,70 @@ namespace UGF.WebRequests.Runtime
             }
 
             return cookie;
+        }
+
+        public static string FormatCookie(WebCookie cookie)
+        {
+            if (!cookie.IsValid()) throw new ArgumentException("Value should be valid.", nameof(cookie));
+
+            var builder = new StringBuilder();
+
+            builder.Append(cookie.Name);
+            builder.Append('=');
+
+            if (cookie.HasValue)
+            {
+                builder.Append(cookie.Value);
+            }
+
+            if (cookie.HasExpires)
+            {
+                AddAttribute(builder, "Expires", cookie.Expires.ToString("R"));
+            }
+
+            if (cookie.HasMaxAge)
+            {
+                AddAttribute(builder, "Max-Age", cookie.MaxAge.TotalSeconds.ToString("#0"));
+            }
+
+            if (cookie.HasDomain)
+            {
+                AddAttribute(builder, "Domain", cookie.Domain);
+            }
+
+            if (cookie.HasPath)
+            {
+                AddAttribute(builder, "Path", cookie.Path);
+            }
+
+            if (cookie.Secure)
+            {
+                AddAttribute(builder, "Secure");
+            }
+
+            if (cookie.HttpOnly)
+            {
+                AddAttribute(builder, "HttpOnly");
+            }
+
+            if (cookie.HasSameSite)
+            {
+                AddAttribute(builder, "SameSite", cookie.SameSite.ToString());
+            }
+
+            static void AddAttribute(StringBuilder builder, string name, string value = "")
+            {
+                builder.Append(';').Append(' ');
+                builder.Append(name);
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    builder.Append('=');
+                    builder.Append(value);
+                }
+            }
+
+            return builder.ToString();
         }
 
         public static bool IsValidCookieName(string name)
