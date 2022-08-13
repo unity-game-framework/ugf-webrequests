@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 
 namespace UGF.WebRequests.Runtime.Tests
 {
-    public class TestWebRequestCookieUtility
+    public class TestWebResponseCookie
     {
         private readonly List<(string value, WebResponseCookie cookie)> m_cookiesFormat = new List<(string value, WebResponseCookie)>
         {
@@ -86,7 +85,7 @@ namespace UGF.WebRequests.Runtime.Tests
         {
             foreach ((string value, WebResponseCookie cookie) in m_cookiesValid)
             {
-                WebResponseCookie cookieResult = WebRequestCookieUtility.ParseCookie(value);
+                WebResponseCookie cookieResult = WebResponseCookie.Parse(value);
 
                 AssertEqualCookie(cookie, cookieResult);
             }
@@ -95,20 +94,20 @@ namespace UGF.WebRequests.Runtime.Tests
         [Test]
         public void ParseCookieInvalid()
         {
-            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie(""));
-            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie(";"));
-            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie(";=value"));
-            Assert.Throws<ArgumentException>(() => WebRequestCookieUtility.ParseCookie("cookie@=value"));
+            Assert.Throws<ArgumentException>(() => WebResponseCookie.Parse(""));
+            Assert.Throws<ArgumentException>(() => WebResponseCookie.Parse(";"));
+            Assert.Throws<ArgumentException>(() => WebResponseCookie.Parse(";=value"));
+            Assert.Throws<ArgumentException>(() => WebResponseCookie.Parse("cookie@=value"));
         }
 
         [Test]
         public void TryParseCookie()
         {
-            bool result1 = WebRequestCookieUtility.TryParseCookie("sessionId=38afes7a8", out WebResponseCookie cookie1);
-            bool result2 = WebRequestCookieUtility.TryParseCookie("id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT", out WebResponseCookie cookie2);
-            bool result3 = WebRequestCookieUtility.TryParseCookie("id=a3fWa; Max-Age=2592000", out WebResponseCookie cookie3);
-            bool result4 = WebRequestCookieUtility.TryParseCookie("qwerty=219ffwef9w0f; Domain=somecompany.co.uk", out WebResponseCookie cookie4);
-            bool result5 = WebRequestCookieUtility.TryParseCookie("cook=value; Secure", out WebResponseCookie cookie5);
+            bool result1 = WebResponseCookie.TryParse("sessionId=38afes7a8", out WebResponseCookie cookie1);
+            bool result2 = WebResponseCookie.TryParse("id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT", out WebResponseCookie cookie2);
+            bool result3 = WebResponseCookie.TryParse("id=a3fWa; Max-Age=2592000", out WebResponseCookie cookie3);
+            bool result4 = WebResponseCookie.TryParse("qwerty=219ffwef9w0f; Domain=somecompany.co.uk", out WebResponseCookie cookie4);
+            bool result5 = WebResponseCookie.TryParse("cook=value; Secure", out WebResponseCookie cookie5);
 
             Assert.True(result1);
             Assert.True(result2);
@@ -135,78 +134,10 @@ namespace UGF.WebRequests.Runtime.Tests
         {
             foreach ((string value, WebResponseCookie cookie) in m_cookiesFormat)
             {
-                string result = WebRequestCookieUtility.FormatCookie(cookie);
+                string result = cookie.Format();
 
                 Assert.AreEqual(result, value);
             }
-        }
-
-        [Test]
-        public void ParseCookiePairs()
-        {
-            var collection = new List<(string Name, string Value)>
-            {
-                ("cookie", "value"),
-                ("cookie", "value"),
-                ("empty", "")
-            };
-
-            List<(string Name, string Value)> result = WebRequestCookieUtility.ParseCookiePairs("cookie=value; cookie=value; empty=");
-
-            Assert.AreEqual(collection.Count, result.Count);
-
-            for (int i = 0; i < result.Count; i++)
-            {
-                (string name, string value) = result[i];
-
-                Assert.AreEqual(collection[i].Name, name);
-                Assert.AreEqual(collection[i].Value, value);
-            }
-        }
-
-        [Test]
-        public void FormatCookiePairs()
-        {
-            var collection = new List<(string Name, string Value)>
-            {
-                ("cookie", "value"),
-                ("cookie", "value"),
-                ("empty", "")
-            };
-
-            string result = WebRequestCookieUtility.FormatCookiePairs(collection);
-
-            Assert.AreEqual("cookie=value; cookie=value; empty=", result);
-        }
-
-        [Test]
-        public void ParseCookieCollection()
-        {
-            string value = string.Join(',', m_cookiesValid.Select(x => x.value));
-
-            List<WebResponseCookie> result = WebRequestCookieUtility.ParseCookieCollection(value);
-
-            for (int i = 0; i < result.Count; i++)
-            {
-                AssertEqualCookie(m_cookiesValid[i].cookie, result[i]);
-            }
-
-            Assert.Pass($"Parsing cookie collection: {value}");
-        }
-
-        [Test]
-        public void FormatCookieCollection()
-        {
-            string value = WebRequestCookieUtility.FormatCookieCollection(m_cookiesValid.Select(x => x.cookie).ToList());
-
-            List<WebResponseCookie> result = WebRequestCookieUtility.ParseCookieCollection(value);
-
-            for (int i = 0; i < result.Count; i++)
-            {
-                AssertEqualCookie(m_cookiesValid[i].cookie, result[i]);
-            }
-
-            Assert.Pass($"Parsing cookie collection: {value}");
         }
 
         private void AssertEqualCookie(WebResponseCookie first, WebResponseCookie second)
