@@ -1,10 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace UGF.WebRequests.Runtime
 {
     public class WebRequestCookieCollection : WebCookieCollection<WebRequestCookie>
     {
+        public WebRequestCookieCollection()
+        {
+        }
+
+        public WebRequestCookieCollection(int capacity) : base(capacity)
+        {
+        }
+
+        public WebRequestCookieCollection(IEnumerable<WebRequestCookie> cookies) : base(cookies)
+        {
+        }
+
         public static bool TryParse(string value, out WebRequestCookieCollection cookies)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));

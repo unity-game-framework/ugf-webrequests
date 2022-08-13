@@ -37,5 +37,72 @@ namespace UGF.WebRequests.Runtime
                 }
             }
         }
+
+        public static bool IsValidCookieName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
+
+            foreach (char character in name)
+            {
+                switch (character)
+                {
+                    case ' ':
+                    case '(':
+                    case ')':
+                    case '<':
+                    case '>':
+                    case '@':
+                    case ',':
+                    case ';':
+                    case ':':
+                    case '\\':
+                    case '"':
+                    case '/':
+                    case '[':
+                    case ']':
+                    case '?':
+                    case '=':
+                    case '{':
+                    case '}':
+                    {
+                        return false;
+                    }
+                }
+
+                if (char.IsControl(character) || char.IsWhiteSpace(character))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool IsValidCookieValue(string value)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
+
+            foreach (char character in value)
+            {
+                switch (character)
+                {
+                    case ' ':
+                    case ',':
+                    case ';':
+                    case '\\':
+                    case '"':
+                    {
+                        return false;
+                    }
+                }
+
+                if (char.IsControl(character) || char.IsWhiteSpace(character))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

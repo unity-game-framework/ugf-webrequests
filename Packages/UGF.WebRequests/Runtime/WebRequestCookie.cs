@@ -10,8 +10,8 @@ namespace UGF.WebRequests.Runtime
         public WebRequestCookie(string name, string value = "")
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
-            if (!WebRequestCookieUtility.IsValidCookieName(name)) throw new ArgumentException("Name is invalid.");
-            if (!string.IsNullOrEmpty(value) && !WebRequestCookieUtility.IsValidCookieValue(value)) throw new ArgumentException("Value is invalid.");
+            if (!WebRequestUtility.IsValidCookieName(name)) throw new ArgumentException("Name is invalid.");
+            if (!string.IsNullOrEmpty(value) && !WebRequestUtility.IsValidCookieValue(value)) throw new ArgumentException("Value is invalid.");
 
             Name = name;
             Value = value;

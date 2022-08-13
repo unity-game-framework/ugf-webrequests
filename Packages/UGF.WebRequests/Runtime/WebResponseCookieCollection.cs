@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -6,6 +7,18 @@ namespace UGF.WebRequests.Runtime
 {
     public class WebResponseCookieCollection : WebCookieCollection<WebResponseCookie>
     {
+        public WebResponseCookieCollection()
+        {
+        }
+
+        public WebResponseCookieCollection(int capacity) : base(capacity)
+        {
+        }
+
+        public WebResponseCookieCollection(IEnumerable<WebResponseCookie> cookies) : base(cookies)
+        {
+        }
+
         public static bool TryParse(string value, out WebResponseCookieCollection cookies)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));

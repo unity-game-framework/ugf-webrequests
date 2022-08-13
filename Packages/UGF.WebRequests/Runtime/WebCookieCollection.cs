@@ -19,7 +19,22 @@ namespace UGF.WebRequests.Runtime
             }
         }
 
-        private readonly List<TCookie> m_cookies = new List<TCookie>();
+        private readonly List<TCookie> m_cookies;
+
+        protected WebCookieCollection()
+        {
+            m_cookies = new List<TCookie>();
+        }
+
+        protected WebCookieCollection(int capacity)
+        {
+            m_cookies = new List<TCookie>(capacity);
+        }
+
+        protected WebCookieCollection(IEnumerable<TCookie> cookies)
+        {
+            m_cookies = new List<TCookie>(cookies);
+        }
 
         public void Add(TCookie cookie)
         {
