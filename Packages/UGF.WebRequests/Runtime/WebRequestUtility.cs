@@ -54,7 +54,7 @@ namespace UGF.WebRequests.Runtime
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
 
-            value = new Regex("(?<=Expires=).{29}", RegexOptions.IgnoreCase).Replace(value, match => DateTimeOffset.Parse(match.Value).ToString("O"));
+            value = new Regex("(?<=expires=).{29}", RegexOptions.IgnoreCase).Replace(value, match => DateTimeOffset.Parse(match.Value).ToString("O"));
 
             string[] values = value.TrimEnd(';').Split(',');
 
@@ -158,6 +158,61 @@ namespace UGF.WebRequests.Runtime
             return cookie;
         }
 
+        public static List<(string Name, string Value)> ParseCookiePairs(string value)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
+
+            var result = new List<(string Name, string Value)>();
+
+            ParseCookiePairs(value, result);
+
+            return result;
+        }
+
+        public static void ParseCookiePairs(string value, ICollection<(string Name, string Value)> result)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
+            if (result == null) throw new ArgumentNullException(nameof(result));
+
+            string[] parts = value.TrimEnd(';').Split(';');
+
+            foreach (string part in parts)
+            {
+                string[] pair = part.Split('=');
+                string cookieName = pair[0].Trim();
+                string cookieValue = pair.Length > 1 ? pair[1].Trim() : string.Empty;
+
+                result.Add((cookieName, cookieValue));
+            }
+        }
+
+        public static string FormatCookieCollection(IReadOnlyList<WebCookie> collection)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (collection.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(collection));
+
+            var builder = new StringBuilder();
+
+            for (int i = 0; i < collection.Count; i++)
+            {
+                WebCookie cookie = collection[i];
+
+                if (!cookie.IsValid()) throw new ArgumentException("Value should be valid.", nameof(cookie));
+
+                string value = FormatCookie(cookie);
+
+                builder.Append(value);
+
+                if (i < collection.Count - 1)
+                {
+                    builder.Append(',');
+                    builder.Append(' ');
+                }
+            }
+
+            return builder.ToString();
+        }
+
         public static string FormatCookie(WebCookie cookie)
         {
             if (!cookie.IsValid()) throw new ArgumentException("Value should be valid.", nameof(cookie));
@@ -220,34 +275,6 @@ namespace UGF.WebRequests.Runtime
             }
 
             return builder.ToString();
-        }
-
-        public static List<(string Name, string Value)> ParseCookiePairs(string value)
-        {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
-
-            var result = new List<(string Name, string Value)>();
-
-            ParseCookiePairs(value, result);
-
-            return result;
-        }
-
-        public static void ParseCookiePairs(string value, ICollection<(string Name, string Value)> result)
-        {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
-            if (result == null) throw new ArgumentNullException(nameof(result));
-
-            string[] parts = value.TrimEnd(';').Split(';');
-
-            foreach (string part in parts)
-            {
-                string[] pair = part.Split('=');
-                string cookieName = pair[0].Trim();
-                string cookieValue = pair.Length > 1 ? pair[1].Trim() : string.Empty;
-
-                result.Add((cookieName, cookieValue));
-            }
         }
 
         public static bool IsValidCookieName(string name)
