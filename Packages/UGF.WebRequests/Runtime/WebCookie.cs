@@ -6,13 +6,19 @@ namespace UGF.WebRequests.Runtime
     {
         public string Name { get; }
         public string Value { get; }
+        public bool HasValue { get { return !string.IsNullOrEmpty(Value); } }
         public DateTimeOffset Expires { get; set; }
+        public bool HasExpires { get { return Expires != default; } }
         public TimeSpan MaxAge { get; set; }
+        public bool HasMaxAge { get { return MaxAge != default; } }
         public string Domain { get; set; }
+        public bool HasDomain { get { return !string.IsNullOrEmpty(Domain); } }
         public string Path { get; set; }
+        public bool HasPath { get { return !string.IsNullOrEmpty(Path); } }
         public bool Secure { get; set; }
         public bool HttpOnly { get; set; }
         public WebCookieSameSite SameSite { get; set; }
+        public bool HasSameSite { get { return SameSite != WebCookieSameSite.None; } }
 
         public WebCookie(string name, string value = "")
         {
