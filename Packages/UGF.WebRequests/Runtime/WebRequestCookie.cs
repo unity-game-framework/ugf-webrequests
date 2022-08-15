@@ -6,6 +6,7 @@ namespace UGF.WebRequests.Runtime
     {
         public string Name { get; }
         public string Value { get; }
+        public bool HasValue { get { return !string.IsNullOrEmpty(Value); } }
 
         public WebRequestCookie(string name, string value = "")
         {
