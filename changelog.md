@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1](https://github.com/unity-game-framework/ugf-webrequests/releases/tag/1.5.1) - 2022-08-15  
+
+### Release Notes
+
+- [Milestone](https://github.com/unity-game-framework/ugf-webrequests/milestone/11?closed=1)  
+    
+
+### Added
+
+- Add request cookie check for value ([#25](https://github.com/unity-game-framework/ugf-webrequests/issues/25))  
+    - Add `WebRequestCookie.HasValue` property to check whether value is specified or not.
+
 ## [1.5.0](https://github.com/unity-game-framework/ugf-webrequests/releases/tag/1.5.0) - 2022-08-13  
 
 ### Release Notes
